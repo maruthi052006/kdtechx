@@ -136,3 +136,39 @@ class QuestionSecurityTests(TestCase):
         self.assertTrue(Question.objects.filter(question_text='What is 2+2?').exists())
         self.assertTrue(Question.objects.filter(question_text='What is 3+3?').exists())
 
+    def test_portal_admin_bulk_delete_questions(self):
+        self.client.force_authenticate(user=self.admin)
+        self.client.force_login(self.admin)
+        
+        q1 = Question.objects.create(
+            course=self.course,
+            question_text='Bulk Q1',
+            option_a='1', option_b='2', option_c='3', option_d='4',
+            correct_answer='A',
+            created_by=self.admin
+        )
+        q2 = Question.objects.create(
+            course=self.course,
+            question_text='Bulk Q2',
+            option_a='1', option_b='2', option_c='3', option_d='4',
+            correct_answer='B',
+            created_by=self.admin
+        )
+        
+        response = self.client.post('/portal/admin/questions/bulk-delete/', {
+            'question_ids_str': f"{q1.id},{q2.id}"
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertFalse(Question.objects.filter(id=q1.id).exists())
+        self.assertFalse(Question.objects.filter(id=q2.id).exists())
+
+    def test_portal_admin_question_template_csv(self):
+        self.client.force_authenticate(user=self.admin)
+        self.client.force_login(self.admin)
+        
+        response = self.client.get('/portal/admin/questions/template/csv/')
+        self.assertEqual(response.status_code, 200)
+        self.assertEqual(response['Content-Type'], 'text/csv')
+        self.assertIn('question,option_a', response.content.decode('utf-8'))
+
+

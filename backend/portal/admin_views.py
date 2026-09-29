@@ -336,6 +336,56 @@ def question_delete_view(request, question_id):
     return redirect('admin_portal:questions')
 
 @admin_required
+def question_bulk_delete_view(request):
+    if request.method == 'POST':
+        question_ids = request.POST.getlist('question_ids')
+        if not question_ids:
+            raw_ids = request.POST.get('question_ids_str', '')
+            if raw_ids:
+                question_ids = [q_id.strip() for q_id in raw_ids.split(',') if q_id.strip()]
+
+        if question_ids:
+            deleted_count, _ = Question.objects.filter(id__in=question_ids).delete()
+            messages.success(request, f"Successfully deleted {deleted_count} question(s) from Question Bank.")
+        else:
+            messages.warning(request, "No questions were selected for deletion.")
+
+    return redirect('admin_portal:questions')
+
+@admin_required
+def question_template_csv_view(request):
+    response = HttpResponse(content_type='text/csv')
+    response['Content-Disposition'] = 'attachment; filename="question_import_template.csv"'
+
+    writer = csv.writer(response)
+    writer.writerow(['question', 'option_a', 'option_b', 'option_c', 'option_d', 'answer', 'difficulty', 'marks', 'topic', 'explanation'])
+    writer.writerow([
+        'What is the keyword used to define a function in Python?',
+        'func',
+        'def',
+        'function',
+        'define',
+        'B',
+        'easy',
+        '1.00',
+        'Functions',
+        'Python uses the def keyword to define callable functions.'
+    ])
+    writer.writerow([
+        'Which standard data type in Python is immutable?',
+        'List',
+        'Dictionary',
+        'Tuple',
+        'Set',
+        'C',
+        'medium',
+        '1.00',
+        'Data Structures',
+        'Tuples cannot be altered after instantiation.'
+    ])
+    return response
+
+@admin_required
 def question_import_view(request):
     courses = Course.objects.all().order_by('name')
 
