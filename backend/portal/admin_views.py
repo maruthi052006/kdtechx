@@ -377,22 +377,23 @@ def question_import_view(request):
         with transaction.atomic():
             for row in list(valid_rows):
                 topic = None
-                if row.get('topic'):
+                raw_topic = row.get('topic_name') or row.get('topic')
+                if raw_topic:
                     topic = Topic.objects.filter(
                         week__course=course,
-                        title__iexact=str(row['topic']).strip()
+                        title__iexact=str(raw_topic).strip()
                     ).first()
 
                 Question.objects.create(
                     course=course,
                     topic=topic,
-                    topic_name=str(row.get('topic', '')) if not topic else None,
-                    question_text=row['question'],
-                    option_a=row['optiona'],
-                    option_b=row['optionb'],
-                    option_c=row['optionc'],
-                    option_d=row['optiond'],
-                    correct_answer=row['answer'],
+                    topic_name=str(raw_topic).strip() if not topic and raw_topic else None,
+                    question_text=row.get('question_text') or row.get('question', ''),
+                    option_a=row.get('option_a') or row.get('optiona', ''),
+                    option_b=row.get('option_b') or row.get('optionb', ''),
+                    option_c=row.get('option_c') or row.get('optionc', ''),
+                    option_d=row.get('option_d') or row.get('optiond', ''),
+                    correct_answer=row.get('correct_answer') or row.get('answer', 'A'),
                     difficulty=row.get('difficulty', 'medium'),
                     marks=Decimal(str(row.get('marks', 1.00))),
                     explanation=row.get('explanation', ''),

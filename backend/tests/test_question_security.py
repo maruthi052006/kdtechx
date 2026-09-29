@@ -114,3 +114,25 @@ class QuestionSecurityTests(TestCase):
             self.assertIn('question_text', q)
             self.assertIn('options', q)
             self.assertEqual(len(q['options']), 4)
+
+    def test_portal_admin_question_import_csv(self):
+        import io
+        from django.core.files.uploadedfile import SimpleUploadedFile
+        self.client.force_authenticate(user=self.admin)
+        self.client.force_login(self.admin)
+        
+        csv_content = (
+            "question,option_a,option_b,option_c,option_d,answer,difficulty,marks,topic\n"
+            "What is 2+2?,1,2,3,4,D,easy,1,Basics\n"
+            "What is 3+3?,6,5,4,3,A,medium,2,Basics\n"
+        )
+        csv_file = SimpleUploadedFile("questions.csv", csv_content.encode('utf-8'), content_type="text/csv")
+        
+        response = self.client.post('/portal/admin/questions/import/', {
+            'course_id': self.course.id,
+            'file': csv_file
+        })
+        self.assertEqual(response.status_code, 302)
+        self.assertTrue(Question.objects.filter(question_text='What is 2+2?').exists())
+        self.assertTrue(Question.objects.filter(question_text='What is 3+3?').exists())
+
