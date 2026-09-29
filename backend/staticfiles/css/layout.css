@@ -172,17 +172,58 @@
   padding: var(--kd-space-6);
 }
 
-/* Responsive Overrides */
+/* Responsive Overrides & Mobile Offcanvas Integration */
 @media (max-width: 991.98px) {
-  .kd-sidebar {
-    display: none; /* Controlled via Bootstrap Offcanvas on mobile */
+  /* Hide the fixed desktop sidebar */
+  .kd-app-wrapper > .kd-sidebar {
+    display: none !important;
+  }
+
+  /* Make sidebar inside mobile offcanvas full-width and functional */
+  .offcanvas .kd-sidebar {
+    display: flex !important;
+    width: 100% !important;
+    min-width: 100% !important;
+    height: 100% !important;
+    position: static !important;
+    border: none !important;
+    background: transparent !important;
+  }
+
+  .offcanvas .kd-sidebar-header {
+    display: none; /* Already rendered in offcanvas-header */
+  }
+
+  .offcanvas .kd-sidebar-content {
+    padding: var(--kd-space-3);
+  }
+
+  .offcanvas.kd-glass, .offcanvas-start {
+    background: var(--kd-surface) !important;
+    border-right: 1px solid var(--kd-border-strong) !important;
+    box-shadow: var(--kd-shadow-elevated) !important;
   }
 
   .kd-topbar {
-    padding: 0 var(--kd-space-4);
+    padding: 0 var(--kd-space-3);
+    height: 58px;
+    padding-top: max(var(--kd-safe-top), 0px);
   }
 
   .kd-content-container {
-    padding: var(--kd-space-4);
+    padding: var(--kd-space-3);
+  }
+}
+
+/* Safe Area Inset Support for Sticky Elements */
+.kd-topbar {
+  padding-left: max(var(--kd-space-6), var(--kd-safe-left));
+  padding-right: max(var(--kd-space-6), var(--kd-safe-right));
+}
+
+@media (max-width: 991.98px) {
+  .kd-topbar {
+    padding-left: max(var(--kd-space-3), var(--kd-safe-left));
+    padding-right: max(var(--kd-space-3), var(--kd-safe-right));
   }
 }

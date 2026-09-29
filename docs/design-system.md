@@ -1,174 +1,187 @@
-# Design System & UI Tokens Specification
-## KDTechX Learning & Assessment Portal
-**Version:** 1.0.0-PROD-RC  
-**Aesthetic:** Modern Technical SaaS (Developer Platform meets Enterprise EdTech)  
-**Status:** Approved for Implementation (Phase 0 Discovery)  
+# Design System Specification: KDTechX Enterprise UI
+**Document ID:** `DS-KDTECHX-2026-01`  
+**Brand Identity:** Technical, Intelligent, Modern, Precise, Premium, Confident, Minimal  
+**Tagline:** *Learn. Practice. Assess. Grow.*  
 
 ---
 
-## 1. Design Philosophy & Visual Language
+## 1. Design Philosophy & Aesthetic Standard
 
-KDTechX rejects both generic corporate dashboard templates and overblown, distracting glassmorphism gimmicks. The interface embodies a **high-precision, developer-grade aesthetic**:
-- **Information Density**: Crisp, high-contrast layouts engineered for fast scanning of tabular data, technical code snippets, and assessment metrics.
-- **Purposeful Color Application**: 90% monochrome baseline surfaces accented with electric cyan and vivid indigo to direct cognitive focus toward actionable elements and active states.
-- **Micro-Precision Feedback**: Sub-200ms spring animations, tangible hover borders, and tactile keyboard navigation for distraction-free assessment workflows.
+The KDTechX portal is crafted to embody the polish of top-tier developer platforms and enterprise SaaS systems (Linear, Vercel, Stripe). It strictly avoids generic LMS tropes, raw Bootstrap appearances, or juvenile educational styling.
+
+### The 80-15-5 Color Distribution
+* **80% Neutral Canvas:** Deep rich slates, dark surface layers, subtle borders, and precise white/light-gray typography.
+* **15% Secondary Structure:** Subtle container fills, subdued badges, table zebra stripes, and muted icon highlights.
+* **5% Vibrant Accent:** Purposeful application of KDTechX Blue (`#4f8cff`), Electric Cyan (`#2bd8ff`), and Status Emerald (`#2ddf91`) reserved strictly for primary actions, active navigation indicators, and critical metrics.
 
 ---
 
-## 2. Design Tokens & CSS Custom Properties
+## 2. Core Token Definitions (`static/css/tokens.css`)
 
-### 2.1 Color Palette
-
-#### Dark Mode (Default Theme)
+### 2.1 Color Tokens: Dark Mode (Default)
 ```css
-:root[data-theme='dark'], .dark {
-  /* Backgrounds & Surfaces */
-  --bg-canvas: #090d16;          /* Deepest navy/black backdrop */
-  --bg-surface: #0f172a;         /* Base card & panel container */
-  --bg-surface-elevated: #1e293b;/* Hover & elevated modal surface */
-  --bg-surface-subtle: #141e33;  /* Subdued section fill */
-
-  /* Borders & Dividers */
-  --border-subtle: rgba(255, 255, 255, 0.08);
-  --border-strong: rgba(255, 255, 255, 0.16);
-  --border-focus: #38bdf8;
+:root, [data-theme="dark"] {
+  /* Surfaces & Backgrounds */
+  --kd-bg: #070a0f;
+  --kd-surface: #0c1118;
+  --kd-surface-2: #111823;
+  --kd-surface-3: #16202e;
+  --kd-surface-hover: #1c2738;
+  
+  /* Borders */
+  --kd-border: rgba(255, 255, 255, 0.08);
+  --kd-border-strong: rgba(255, 255, 255, 0.15);
+  --kd-border-focus: rgba(79, 140, 255, 0.5);
 
   /* Typography */
-  --text-primary: #f8fafc;       /* Highest contrast headers and values */
-  --text-secondary: #94a3b8;     /* Supporting body descriptions */
-  --text-muted: #64748b;         /* Disabled state and subtle metadata */
+  --kd-text: #f7f9fc;
+  --kd-text-secondary: #aab4c3;
+  --kd-text-muted: #6f7b8c;
+  --kd-text-disabled: #414b5c;
 
   /* Brand Accents */
-  --brand-cyan: #06b6d4;
-  --brand-blue: #2563eb;
-  --brand-indigo: #6366f1;
-  --brand-gradient: linear-gradient(135deg, #06b6d4 0%, #2563eb 50%, #4f46e5 100%);
+  --kd-primary: #4f8cff;
+  --kd-primary-hover: #6a9cff;
+  --kd-primary-tint: rgba(79, 140, 255, 0.12);
+  --kd-cyan: #2bd8ff;
+  --kd-cyan-tint: rgba(43, 216, 255, 0.12);
+  --kd-indigo: #746cff;
 
   /* Semantic Feedback */
-  --color-success: #10b981;
-  --color-warning: #f59e0b;
-  --color-danger: #ef4444;
-  --color-info: #0284c7;
+  --kd-success: #2ddf91;
+  --kd-success-tint: rgba(45, 223, 145, 0.12);
+  --kd-warning: #f4b740;
+  --kd-warning-tint: rgba(244, 183, 64, 0.12);
+  --kd-danger: #ff5f6d;
+  --kd-danger-tint: rgba(255, 95, 109, 0.12);
+
+  /* Elevation Shadows */
+  --kd-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.35);
+  --kd-shadow-md: 0 4px 12px rgba(0, 0, 0, 0.45);
+  --kd-shadow-lg: 0 12px 32px rgba(0, 0, 0, 0.6);
+  --kd-shadow-card: 0 0 0 1px var(--kd-border), 0 4px 16px rgba(0, 0, 0, 0.3);
 }
 ```
 
-#### Light Mode (Intentional, High-Contrast Light Theme)
+### 2.2 Color Tokens: Light Mode (Independently Crafted)
 ```css
-:root[data-theme='light'], .light {
-  /* Backgrounds & Surfaces */
-  --bg-canvas: #f8fafc;          /* Clean off-white paper canvas */
-  --bg-surface: #ffffff;         /* Pure white container cards */
-  --bg-surface-elevated: #f1f5f9;/* Light slate hover layers */
-  --bg-surface-subtle: #e2e8f0;  /* Secondary dividers */
+[data-theme="light"] {
+  /* Surfaces & Backgrounds */
+  --kd-bg: #f8fafc;
+  --kd-surface: #ffffff;
+  --kd-surface-2: #f1f5f9;
+  --kd-surface-3: #e2e8f0;
+  --kd-surface-hover: #f8fafc;
 
-  /* Borders & Dividers */
-  --border-subtle: #e2e8f0;
-  --border-strong: #cbd5e1;
-  --border-focus: #0284c7;
+  /* Borders */
+  --kd-border: rgba(0, 0, 0, 0.08);
+  --kd-border-strong: rgba(0, 0, 0, 0.16);
+  --kd-border-focus: rgba(37, 99, 235, 0.4);
 
   /* Typography */
-  --text-primary: #0f172a;       /* Deep slate primary text */
-  --text-secondary: #475569;     /* Slate body text */
-  --text-muted: #94a3b8;         /* Subdued captions */
+  --kd-text: #0f172a;
+  --kd-text-secondary: #475569;
+  --kd-text-muted: #64748b;
+  --kd-text-disabled: #94a3b8;
 
   /* Brand Accents */
-  --brand-cyan: #0891b2;
-  --brand-blue: #1d4ed8;
-  --brand-indigo: #4338ca;
-  --brand-gradient: linear-gradient(135deg, #0891b2 0%, #1d4ed8 50%, #4338ca 100%);
+  --kd-primary: #2563eb;
+  --kd-primary-hover: #1d4ed8;
+  --kd-primary-tint: rgba(37, 99, 235, 0.08);
+  --kd-cyan: #0284c7;
+  --kd-cyan-tint: rgba(2, 132, 199, 0.08);
+  --kd-indigo: #4f46e5;
 
   /* Semantic Feedback */
-  --color-success: #059669;
-  --color-warning: #d97706;
-  --color-danger: #dc2626;
-  --color-info: #0369a1;
+  --kd-success: #16a34a;
+  --kd-success-tint: rgba(22, 163, 74, 0.08);
+  --kd-warning: #d97706;
+  --kd-warning-tint: rgba(217, 119, 6, 0.08);
+  --kd-danger: #dc2626;
+  --kd-danger-tint: rgba(220, 38, 38, 0.08);
+
+  /* Elevation Shadows */
+  --kd-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --kd-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
+  --kd-shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
+  --kd-shadow-card: 0 0 0 1px var(--kd-border), 0 2px 8px rgba(0, 0, 0, 0.04);
 }
 ```
 
 ---
 
-## 3. Typography System
+## 3. Typography Hierarchy
 
-- **Primary Typeface**: `Inter`, `-apple-system`, `BlinkMacSystemFont`, `Segoe UI`, `sans-serif`
-- **Monospace Typeface**: `JetBrains Mono`, `Fira Code`, `Consolas`, `monospace` (for code questions & IDs)
+Utilizing **Inter** or **Geist** with tabular figures enabled (`font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum"`).
 
-| Style Token | Font Size | Line Height | Weight | Letter Spacing | Usage |
+| Token | Size | Line Height | Weight | Letter Spacing | Purpose |
 |---|---|---|---|---|---|
-| `display` | 2.5rem (40px) | 1.15 | 800 | -0.03em | Landing Hero |
-| `h1` | 2.0rem (32px) | 1.2 | 700 | -0.025em | Main Dashboard Title |
-| `h2` | 1.5rem (24px) | 1.25 | 600 | -0.02em | Section Headers |
-| `h3` | 1.25rem (20px) | 1.3 | 600 | -0.015em | Card Titles |
-| `body-lg` | 1.125rem (18px) | 1.5 | 400 | normal | Exam Question Prompts |
-| `body-base` | 1.0rem (16px) | 1.5 | 400 | normal | Standard Content Text |
-| `body-sm` | 0.875rem (14px) | 1.45 | 400/500 | normal | Form Labels & Meta |
-| `caption` | 0.75rem (12px) | 1.4 | 500 | 0.02em | Badges & Table Headers |
-| `code` | 0.875rem (14px) | 1.6 | 400 | normal | Technical Questions |
+| `Display` | 2.500rem (40px) | 1.15 | 800 | -0.035em | Hero Landing Headlines |
+| `H1` | 1.875rem (30px) | 1.25 | 700 | -0.025em | Main Page Titles |
+| `H2` | 1.500rem (24px) | 1.30 | 600 | -0.020em | Section Headers |
+| `H3` | 1.250rem (20px) | 1.35 | 600 | -0.015em | Card Titles, Modal Headers |
+| `H4` | 1.000rem (16px) | 1.40 | 600 | -0.010em | Subheaders, Table Headers |
+| `Body` | 0.9375rem (15px)| 1.55 | 400 | -0.005em | Default text, form labels |
+| `Body Small` | 0.8125rem (13px)| 1.50 | 400 | 0.000em | Secondary metadata |
+| `Caption` | 0.7500rem (12px)| 1.40 | 500 | +0.020em | Status badges, timestamps |
+| `Metric` | 2.2500rem (36px)| 1.10 | 700 | -0.030em | Dashboard KPIs, timers |
 
 ---
 
-## 4. Spacing, Elevation & Radius Tokens
+## 4. Spacing Scale & Border Radii
 
+### Spacing Scale
+* `4px` (`--kd-space-1`): Inner icon gaps, micro tags
+* `8px` (`--kd-space-2`): Button padding vertical, list spacing
+* `12px` (`--kd-space-3`): Input vertical padding, compact table cells
+* `16px` (`--kd-space-4`): Standard component gutters, button padding horizontal
+* `20px` (`--kd-space-5`): Card internal padding
+* `24px` (`--kd-space-6`): Section separation
+* `32px` (`--kd-space-8`): Layout column gutters
+* `48px` (`--kd-space-12`): Dashboard widget spacing
+* `64px` (`--kd-space-16`): Hero sections and large breaks
+
+### Border Radii
+* `6px` (`--kd-radius-sm`): Badges, tooltips, small buttons
+* `10px` (`--kd-radius-md`): Inputs, standard buttons, dropdown menus
+* `14px` (`--kd-radius-lg`): Cards, table containers, exam option boxes
+* `18px` (`--kd-radius-xl`): Dialogs, modal sheets, command palette
+* `24px` (`--kd-radius-2xl`): Hero spotlight elements
+
+---
+
+## 5. Technical Grid & Atmospheric Surfaces
+
+### Atmospheric Background
 ```css
-/* Elevation Shadows */
---shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
---shadow-card: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
---shadow-elevated: 0 10px 15px -3px rgba(0, 0, 0, 0.2), 0 4px 6px -4px rgba(0, 0, 0, 0.15);
---shadow-modal: 0 25px 50px -12px rgba(0, 0, 0, 0.35);
-
-/* Border Radius */
---radius-sm: 6px;
---radius-md: 10px;
---radius-lg: 14px;
---radius-xl: 20px;
---radius-pill: 9999px;
-```
-
----
-
-## 5. Responsive Viewport Breakpoints
-
-| Breakpoint | Minimum Width | Target Devices | Layout Behavior |
-|---|---|---|---|
-| `xs` | `320px` - `479px` | Compact SmartPhones (iPhone SE) | Single column, drawer nav, stacked cards |
-| `sm` | `480px` - `767px` | Large SmartPhones & Phablets | Single column, touch-optimized tap targets |
-| `md` | `768px` - `1023px` | Tablets & Small Laptops | 2-column grids, collapsible rail sidebar |
-| `lg` | `1024px` - `1279px` | Standard Laptops | 3-column grids, full sidebar, data tables |
-| `xl` | `1280px` - `1535px` | High-Res Desktop Monitors | Fixed container (1280px max-width) |
-| `2xl` | `1536px` - `2560px` | Ultra-wide Displays | Centered container, ample whitespace |
-
----
-
-## 6. Motion & Accessibility Directives
-
-### 6.1 Framer Motion Spring Standards
-```typescript
-export const springTransition = {
-  type: "spring",
-  stiffness: 400,
-  damping: 30,
-};
-
-export const pageFadeVariant = {
-  initial: { opacity: 0, y: 8 },
-  animate: { opacity: 1, y: 0, transition: { duration: 0.2 } },
-  exit: { opacity: 0, y: -8, transition: { duration: 0.15 } }
-};
-```
-
-### 6.2 Reduced Motion Compliance
-All motion animations must listen to `prefers-reduced-motion: reduce`:
-```css
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-    scroll-behavior: auto !important;
-  }
+.kd-bg-grid {
+  background-image: 
+    linear-gradient(to right, var(--kd-border) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--kd-border) 1px, transparent 1px);
+  background-size: 32px 32px;
 }
 ```
 
-### 6.3 WCAG AA Focus & Contrast Rules
-- Visible focus indicator: `outline: 2px solid var(--brand-cyan); outline-offset: 2px;`
-- Contrast ratio: Minimum 4.5:1 for body copy against all surfaces.
-- ARIA semantics: Dialogs use `role="dialog" aria-modal="true"`, buttons have accessible labels.
+### Soft Radial Glow
+```css
+.kd-glow-radial {
+  position: absolute;
+  top: -20%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 800px;
+  height: 500px;
+  background: radial-gradient(circle, rgba(79, 140, 255, 0.08) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+}
+```
+
+---
+
+## 6. Micro-Interactions & Animation Standards
+
+* **Duration:** 120ms to 240ms.
+* **Timing Function:** `cubic-bezier(0.16, 1, 0.3, 1)` (snappy ease-out).
+* **Hover States:** Soft background shifts + subtle 1px border illumination. Never jarring transforms or neon glows.
+* **Reduced Motion:** Fully honored via `@media (prefers-reduced-motion: reduce)`.

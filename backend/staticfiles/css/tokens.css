@@ -1,5 +1,5 @@
 /* ==========================================================================
-   KDTechX Design System - Design Tokens
+   KDTechX Design System - Design Tokens & Aurora Glass Architecture
    Brand Identity: Technical, Intelligent, Modern, Precise, Premium
    Palette: 80% Neutral, 15% Secondary, 5% Accent
    ========================================================================== */
@@ -15,10 +15,30 @@
   --kd-surface-hover: #1c2738;
   --kd-surface-active: #223044;
 
+  /* Glassmorphism System (Dark Theme) */
+  --kd-glass-1: rgba(255, 255, 255, 0.035);
+  --kd-glass-1-blur: 12px;
+  --kd-glass-1-border: rgba(255, 255, 255, 0.08);
+
+  --kd-glass-2: rgba(255, 255, 255, 0.055);
+  --kd-glass-2-blur: 20px;
+  --kd-glass-2-border: rgba(255, 255, 255, 0.10);
+
+  --kd-glass-3: rgba(255, 255, 255, 0.075);
+  --kd-glass-3-blur: 28px;
+  --kd-glass-3-border: rgba(255, 255, 255, 0.13);
+
+  /* Neomorphism Depth (Dark Theme) */
+  --kd-neo-shadow: 6px 6px 14px rgba(0, 0, 0, 0.32), -4px -4px 12px rgba(255, 255, 255, 0.02);
+  --kd-neo-shadow-soft: 4px 4px 10px rgba(0, 0, 0, 0.25), -3px -3px 8px rgba(255, 255, 255, 0.02);
+  --kd-neo-shadow-inset: inset 2px 2px 5px rgba(0, 0, 0, 0.45), inset -2px -2px 5px rgba(255, 255, 255, 0.02);
+  --kd-neo-shadow-glow: 0 0 16px rgba(79, 140, 255, 0.2), 6px 6px 14px rgba(0, 0, 0, 0.32);
+
   /* Borders & Dividers */
   --kd-border: rgba(255, 255, 255, 0.08);
+  --kd-border-subtle: rgba(255, 255, 255, 0.04);
   --kd-border-strong: rgba(255, 255, 255, 0.15);
-  --kd-border-focus: rgba(79, 140, 255, 0.55);
+  --kd-border-focus: rgba(79, 140, 255, 0.65);
 
   /* Typography */
   --kd-text: #f7f9fc;
@@ -31,10 +51,12 @@
   --kd-primary-hover: #6a9cff;
   --kd-primary-active: #3b74db;
   --kd-primary-tint: rgba(79, 140, 255, 0.12);
-  --kd-primary-glow: rgba(79, 140, 255, 0.25);
+  --kd-primary-glow: rgba(79, 140, 255, 0.28);
 
   --kd-cyan: #2bd8ff;
   --kd-cyan-tint: rgba(43, 216, 255, 0.12);
+  --kd-cyan-glow: rgba(43, 216, 255, 0.25);
+
   --kd-indigo: #746cff;
   --kd-indigo-tint: rgba(116, 108, 255, 0.12);
 
@@ -51,10 +73,14 @@
   --kd-shadow-md: 0 4px 14px rgba(0, 0, 0, 0.45);
   --kd-shadow-lg: 0 12px 36px rgba(0, 0, 0, 0.65);
   --kd-shadow-card: 0 0 0 1px var(--kd-border), 0 4px 16px rgba(0, 0, 0, 0.35);
+  --kd-shadow-elevated: 0 16px 40px -8px rgba(0, 0, 0, 0.55), 0 0 0 1px var(--kd-border-strong);
 
-  /* Grid & Atmospherics */
-  --kd-grid-color: rgba(255, 255, 255, 0.035);
+  /* Atmospherics & Ambient Lighting */
+  --kd-grid-color: rgba(255, 255, 255, 0.03);
   --kd-glow-color: rgba(79, 140, 255, 0.08);
+  --kd-aurora-1: rgba(79, 140, 255, 0.07);
+  --kd-aurora-2: rgba(43, 216, 255, 0.05);
+  --kd-aurora-3: rgba(116, 108, 255, 0.05);
 
   /* Component specific overrides */
   --bs-body-bg: var(--kd-bg);
@@ -71,10 +97,30 @@
   --kd-surface-hover: #f8fafc;
   --kd-surface-active: #edf2f7;
 
+  /* Glassmorphism System (Light Theme) */
+  --kd-glass-1: rgba(255, 255, 255, 0.65);
+  --kd-glass-1-blur: 12px;
+  --kd-glass-1-border: rgba(0, 0, 0, 0.07);
+
+  --kd-glass-2: rgba(255, 255, 255, 0.78);
+  --kd-glass-2-blur: 20px;
+  --kd-glass-2-border: rgba(0, 0, 0, 0.09);
+
+  --kd-glass-3: rgba(255, 255, 255, 0.90);
+  --kd-glass-3-blur: 28px;
+  --kd-glass-3-border: rgba(0, 0, 0, 0.12);
+
+  /* Neomorphism Depth (Light Theme) */
+  --kd-neo-shadow: 5px 5px 12px rgba(0, 0, 0, 0.06), -5px -5px 12px rgba(255, 255, 255, 0.85);
+  --kd-neo-shadow-soft: 3px 3px 8px rgba(0, 0, 0, 0.04), -3px -3px 8px rgba(255, 255, 255, 0.75);
+  --kd-neo-shadow-inset: inset 2px 2px 4px rgba(0, 0, 0, 0.06), inset -2px -2px 4px rgba(255, 255, 255, 0.9);
+  --kd-neo-shadow-glow: 0 0 14px rgba(37, 99, 235, 0.15), 5px 5px 12px rgba(0, 0, 0, 0.06);
+
   /* Borders & Dividers */
   --kd-border: rgba(0, 0, 0, 0.08);
+  --kd-border-subtle: rgba(0, 0, 0, 0.04);
   --kd-border-strong: rgba(0, 0, 0, 0.16);
-  --kd-border-focus: rgba(37, 99, 235, 0.45);
+  --kd-border-focus: rgba(37, 99, 235, 0.5);
 
   /* Typography */
   --kd-text: #0f172a;
@@ -87,10 +133,12 @@
   --kd-primary-hover: #1d4ed8;
   --kd-primary-active: #1e40af;
   --kd-primary-tint: rgba(37, 99, 235, 0.08);
-  --kd-primary-glow: rgba(37, 99, 235, 0.15);
+  --kd-primary-glow: rgba(37, 99, 235, 0.2);
 
   --kd-cyan: #0284c7;
   --kd-cyan-tint: rgba(2, 132, 199, 0.08);
+  --kd-cyan-glow: rgba(2, 132, 199, 0.2);
+
   --kd-indigo: #4f46e5;
   --kd-indigo-tint: rgba(79, 70, 229, 0.08);
 
@@ -107,10 +155,14 @@
   --kd-shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.08);
   --kd-shadow-lg: 0 10px 25px -3px rgba(0, 0, 0, 0.1);
   --kd-shadow-card: 0 0 0 1px var(--kd-border), 0 2px 8px rgba(0, 0, 0, 0.04);
+  --kd-shadow-elevated: 0 12px 28px -4px rgba(0, 0, 0, 0.12), 0 0 0 1px var(--kd-border-strong);
 
-  /* Grid & Atmospherics */
-  --kd-grid-color: rgba(0, 0, 0, 0.035);
-  --kd-glow-color: rgba(37, 99, 235, 0.06);
+  /* Atmospherics & Ambient Lighting */
+  --kd-grid-color: rgba(0, 0, 0, 0.03);
+  --kd-glow-color: rgba(37, 99, 235, 0.05);
+  --kd-aurora-1: rgba(37, 99, 235, 0.05);
+  --kd-aurora-2: rgba(2, 132, 199, 0.04);
+  --kd-aurora-3: rgba(79, 70, 229, 0.04);
 
   /* Component specific overrides */
   --bs-body-bg: var(--kd-bg);
@@ -119,14 +171,14 @@
 }
 
 /* ==========================================================================
-   Global Layout & Metrics Scale
+   Global Layout, Metrics & Safe Area Support
    ========================================================================== */
 :root {
   /* Typography Scale */
   --kd-font-sans: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   --kd-font-mono: 'JetBrains Mono', SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-  /* Spacing Scale (4, 8, 12, 16, 20, 24, 32, 40, 48, 64, 80, 96, 128) */
+  /* Spacing Scale */
   --kd-space-1: 4px;
   --kd-space-2: 8px;
   --kd-space-3: 12px;
@@ -138,9 +190,8 @@
   --kd-space-12: 48px;
   --kd-space-16: 64px;
   --kd-space-20: 80px;
-  --kd-space-24: 96px;
 
-  /* Border Radii (6, 10, 14, 18, 24) */
+  /* Border Radii */
   --kd-radius-sm: 6px;
   --kd-radius-md: 10px;
   --kd-radius-lg: 14px;
@@ -151,9 +202,136 @@
   /* Transitions */
   --kd-transition-fast: 120ms cubic-bezier(0.16, 1, 0.3, 1);
   --kd-transition-base: 180ms cubic-bezier(0.16, 1, 0.3, 1);
-  --kd-transition-slow: 240ms cubic-bezier(0.16, 1, 0.3, 1);
+  --kd-transition-slow: 260ms cubic-bezier(0.16, 1, 0.3, 1);
 
   /* Layout dimensions */
   --kd-sidebar-width: 270px;
   --kd-topbar-height: 64px;
+
+  /* Touch Targets & Safe Areas */
+  --kd-touch-target: 44px;
+  --kd-safe-top: env(safe-area-inset-top, 0px);
+  --kd-safe-bottom: env(safe-area-inset-bottom, 0px);
+  --kd-safe-left: env(safe-area-inset-left, 0px);
+  --kd-safe-right: env(safe-area-inset-right, 0px);
+}
+
+/* ==========================================================================
+   KDTechX Glassmorphism & Depth Utility Classes
+   ========================================================================== */
+.kd-glass {
+  background: var(--kd-glass-2);
+  backdrop-filter: blur(var(--kd-glass-2-blur));
+  -webkit-backdrop-filter: blur(var(--kd-glass-2-blur));
+  border: 1px solid var(--kd-glass-2-border);
+}
+
+.kd-glass-soft {
+  background: var(--kd-glass-1);
+  backdrop-filter: blur(var(--kd-glass-1-blur));
+  -webkit-backdrop-filter: blur(var(--kd-glass-1-blur));
+  border: 1px solid var(--kd-glass-1-border);
+}
+
+.kd-glass-strong {
+  background: var(--kd-glass-3);
+  backdrop-filter: blur(var(--kd-glass-3-blur));
+  -webkit-backdrop-filter: blur(var(--kd-glass-3-blur));
+  border: 1px solid var(--kd-glass-3-border);
+}
+
+.kd-glass-floating {
+  background: var(--kd-glass-3);
+  backdrop-filter: blur(var(--kd-glass-3-blur));
+  -webkit-backdrop-filter: blur(var(--kd-glass-3-blur));
+  border: 1px solid var(--kd-glass-3-border);
+  box-shadow: var(--kd-shadow-elevated);
+}
+
+/* Neomorphic Utilities */
+.kd-neo {
+  background: var(--kd-surface-2);
+  border: 1px solid var(--kd-border);
+  box-shadow: var(--kd-neo-shadow-soft);
+  transition: all var(--kd-transition-fast);
+}
+
+.kd-neo-inset {
+  background: var(--kd-surface);
+  border: 1px solid var(--kd-border);
+  box-shadow: var(--kd-neo-shadow-inset);
+}
+
+.kd-neo-pill {
+  border-radius: var(--kd-radius-full);
+  box-shadow: var(--kd-neo-shadow-soft);
+  transition: all var(--kd-transition-fast);
+}
+
+.kd-neo-pill:active {
+  box-shadow: var(--kd-neo-shadow-inset);
+  transform: translateY(1px);
+}
+
+/* Technical Grid Background */
+.kd-tech-grid {
+  background-image: 
+    linear-gradient(to right, var(--kd-grid-color) 1px, transparent 1px),
+    linear-gradient(to bottom, var(--kd-grid-color) 1px, transparent 1px);
+  background-size: 32px 32px;
+}
+
+/* Ambient Aurora Gradient Effect */
+.kd-aurora-bg {
+  position: relative;
+  overflow: hidden;
+}
+
+.kd-aurora-bg::before {
+  content: '';
+  position: absolute;
+  top: -20%;
+  left: 15%;
+  width: 70%;
+  height: 60%;
+  background: radial-gradient(circle, var(--kd-aurora-1) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(50px);
+}
+
+.kd-aurora-bg::after {
+  content: '';
+  position: absolute;
+  top: 10%;
+  right: 5%;
+  width: 50%;
+  height: 50%;
+  background: radial-gradient(circle, var(--kd-aurora-2) 0%, transparent 65%);
+  pointer-events: none;
+  z-index: 0;
+  filter: blur(40px);
+}
+
+/* Glow Elements */
+.kd-glow-primary {
+  box-shadow: 0 0 20px var(--kd-primary-glow);
+}
+
+.kd-glow-border {
+  border-color: var(--kd-primary) !important;
+  box-shadow: 0 0 12px var(--kd-primary-glow);
+}
+
+/* Safe Area Utility */
+.kd-safe-area-pt { padding-top: max(var(--kd-space-4), var(--kd-safe-top)); }
+.kd-safe-area-pb { padding-bottom: max(var(--kd-space-4), var(--kd-safe-bottom)); }
+
+/* Touch Target Minimum */
+.kd-touch-target {
+  min-height: var(--kd-touch-target);
+  min-width: var(--kd-touch-target);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
 }
