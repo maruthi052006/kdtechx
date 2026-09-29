@@ -22,7 +22,9 @@ urlpatterns = [
     # Question Bank & Excel
     path('questions/', admin_views.question_list_view, name='questions'),
     path('questions/<int:question_id>/delete/', admin_views.question_delete_view, name='question_delete'),
+    path('questions/bulk-delete/', admin_views.question_bulk_delete_view, name='questions_bulk_delete'),
     path('questions/import/', admin_views.question_import_view, name='questions_import'),
+    path('questions/template/csv/', admin_views.question_template_csv_view, name='questions_template_csv'),
 
     # Quizzes
     path('quizzes/', admin_views.quiz_list_view, name='quizzes'),

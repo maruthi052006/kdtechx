@@ -69,19 +69,31 @@
 
       <!-- Step 2: Question Selection -->
       <div class="kd-card mb-4">
-        <div class="d-flex align-items-center justify-content-between mb-3 pb-2 border-bottom" style="border-color: var(--kd-border) !important;">
+        <div class="d-flex flex-wrap align-items-center justify-content-between gap-2 mb-3 pb-2 border-bottom" style="border-color: var(--kd-border) !important;">
           <div class="d-flex align-items-center gap-2">
             <span class="kd-badge kd-badge-primary">02</span>
             <h2 class="h6 fw-bold text-light mb-0">Select Question Bank Items</h2>
           </div>
-          <span class="text-muted small" id="selected-questions-counter">Selected: <strong>0</strong> questions</span>
+          <div class="d-flex align-items-center gap-2">
+            <button type="button" class="kd-btn kd-btn-outline kd-btn-sm py-1 px-2" onclick="selectAllQuizQuestions(true)">
+              <i class="bi bi-check-all me-1"></i> Select All
+            </button>
+            <button type="button" class="kd-btn kd-btn-outline kd-btn-sm py-1 px-2" onclick="selectAllQuizQuestions(false)">
+              <i class="bi bi-x-circle me-1"></i> Clear All
+            </button>
+            <span class="kd-badge kd-badge-primary py-1 px-2" id="selected-questions-counter">Selected: <strong>0</strong></span>
+          </div>
         </div>
 
-        <div class="kd-table-responsive" style="max-height: 320px; overflow-y: auto;">
+        <div class="kd-table-responsive" style="max-height: 340px; overflow-y: auto;">
           <table class="kd-table table-sm">
             <thead>
               <tr>
-                <th style="width: 40px;">Select</th>
+                <th style="width: 44px; text-align: center;">
+                  <input type="checkbox" id="selectAllQuizQuestionsChk" class="form-check-input" 
+                         style="width: 17px; height: 17px; accent-color: var(--kd-primary); cursor: pointer;"
+                         title="Select All Visible Questions" onchange="toggleSelectAllQuizQuestions(this)">
+                </th>
                 <th>Course</th>
                 <th>Question Prompt</th>
                 <th>Difficulty</th>
@@ -92,8 +104,10 @@
               {% for c in courses %}
                 {% for q in c.questions.all %}
                 <tr class="question-row" data-course-id="{{ c.id }}">
-                  <td>
-                    <input type="checkbox" name="questions" value="{{ q.id }}" class="question-checkbox" onchange="updateSelectedCount()">
+                  <td style="text-align: center; vertical-align: middle;">
+                    <input type="checkbox" name="questions" value="{{ q.id }}" class="question-checkbox form-check-input" 
+                           style="width: 17px; height: 17px; accent-color: var(--kd-primary); cursor: pointer;"
+                           onchange="updateSelectedCount()">
                   </td>
                   <td><span class="kd-course-code">{{ c.code }}</span></td>
                   <td>
@@ -199,6 +213,39 @@
 </div>
 
 <script>
+function getVisibleQuizQuestionCheckboxes() {
+  const rows = document.querySelectorAll('.question-row');
+  const visible = [];
+  rows.forEach(r => {
+    if (r.style.display !== 'none') {
+      const chk = r.querySelector('.question-checkbox');
+      if (chk) visible.push(chk);
+    }
+  });
+  return visible;
+}
+
+function selectAllQuizQuestions(checked) {
+  const visible = getVisibleQuizQuestionCheckboxes();
+  visible.forEach(chk => {
+    chk.checked = checked;
+  });
+  const masterChk = document.getElementById('selectAllQuizQuestionsChk');
+  if (masterChk) {
+    masterChk.checked = checked;
+    masterChk.indeterminate = false;
+  }
+  updateSelectedCount();
+}
+
+function toggleSelectAllQuizQuestions(master) {
+  const visible = getVisibleQuizQuestionCheckboxes();
+  visible.forEach(chk => {
+    chk.checked = master.checked;
+  });
+  updateSelectedCount();
+}
+
 function filterQuestionsByCourse(courseId) {
   const rows = document.querySelectorAll('.question-row');
   rows.forEach(r => {
@@ -213,8 +260,17 @@ function filterQuestionsByCourse(courseId) {
 }
 
 function updateSelectedCount() {
-  const checked = document.querySelectorAll('.question-checkbox:checked').length;
-  document.getElementById('selected-questions-counter').innerHTML = `Selected: <strong>${checked}</strong> questions`;
+  const visible = getVisibleQuizQuestionCheckboxes();
+  const checked = visible.filter(c => c.checked).length;
+  const counter = document.getElementById('selected-questions-counter');
+  if (counter) {
+    counter.innerHTML = `Selected: <strong>${checked}</strong>`;
+  }
+  const masterChk = document.getElementById('selectAllQuizQuestionsChk');
+  if (masterChk && visible.length > 0) {
+    masterChk.checked = (checked === visible.length);
+    masterChk.indeterminate = (checked > 0 && checked < visible.length);
+  }
 }
 
 // Preset default start_at to now and deadline to +7 days
@@ -232,6 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const deadline = new Date(now.getTime() + 7 * 24 * 60 * 60 * 1000);
     deadlineInput.value = formatIso(deadline);
   }
+  updateSelectedCount();
 });
 </script>
 {% endblock %}

@@ -8,14 +8,41 @@
 <div class="d-flex flex-column flex-sm-row align-items-sm-center justify-content-between gap-3 mb-4">
   <div>
     <h1 class="h4 fw-bold text-light mb-1">Central Question Repository</h1>
-    <p class="text-muted small mb-0">Manage reusable question items, options, difficulty ratings, and explanations.</p>
+    <p class="text-muted small mb-0">Manage reusable question items, options, difficulty ratings, bulk deletion, and spreadsheet imports.</p>
   </div>
-  <div class="d-flex align-items-center gap-2">
-    <a href="{% url 'admin_portal:questions_import' %}" class="kd-btn kd-btn-secondary kd-btn-sm">
-      <i class="bi bi-file-earmark-excel"></i> Excel Batch Import
+  <div class="d-flex flex-wrap align-items-center gap-2">
+    <button type="button" class="kd-btn kd-btn-outline-danger kd-btn-sm" onclick="handleSelectAllToDelete()" title="Select all questions and delete">
+      <i class="bi bi-trash-fill"></i> Select All to Delete
+    </button>
+    <a href="{% url 'admin_portal:questions_template_csv' %}" class="kd-btn kd-btn-outline kd-btn-sm" title="Download starter CSV template">
+      <i class="bi bi-download"></i> Template CSV
     </a>
+    <button type="button" class="kd-btn kd-btn-secondary kd-btn-sm" data-bs-toggle="modal" data-bs-target="#importQuestionsModal">
+      <i class="bi bi-file-earmark-excel"></i> Select All to Import
+    </button>
     <button type="button" class="kd-btn kd-btn-primary kd-btn-sm" data-bs-toggle="modal" data-bs-target="#createQuestionModal">
       <i class="bi bi-plus-circle"></i> Add Question
+    </button>
+  </div>
+</div>
+
+<!-- Floating / Sticky Bulk Actions Toolbar -->
+<div id="bulkActionsBar" class="p-3 mb-3 rounded border d-none align-items-center justify-content-between gap-3" 
+     style="background-color: var(--kd-surface-2); border-color: var(--kd-primary) !important; box-shadow: 0 4px 20px rgba(0,0,0,0.35);">
+  <div class="d-flex flex-wrap align-items-center gap-2">
+    <span class="kd-badge kd-badge-primary px-3 py-2 fs-6 fw-bold">
+      <i class="bi bi-check2-square me-1"></i> <span id="selectedCount">0</span> selected
+    </span>
+    <button type="button" class="kd-btn kd-btn-outline kd-btn-sm" onclick="selectAllQuestions(true)">
+      <i class="bi bi-check-all"></i> Select All
+    </button>
+    <button type="button" class="kd-btn kd-btn-outline kd-btn-sm" onclick="selectAllQuestions(false)">
+      <i class="bi bi-x-circle"></i> Deselect All
+    </button>
+  </div>
+  <div class="d-flex align-items-center gap-2">
+    <button type="button" class="kd-btn kd-btn-danger kd-btn-sm" onclick="openBulkDeleteModal()">
+      <i class="bi bi-trash-fill"></i> Delete Selected Questions
     </button>
   </div>
 </div>
@@ -26,7 +53,7 @@
     <div class="d-flex align-items-center gap-2 flex-grow-1" style="max-width: 600px;">
       <div class="kd-search-wrapper flex-grow-1">
         <i class="bi bi-search kd-search-icon"></i>
-        <input type="text" class="kd-input kd-search-input" placeholder="Search questions..." data-table-search="questions-table">
+        <input type="text" class="kd-input kd-search-input" placeholder="Search questions in table..." data-table-search="questions-table">
       </div>
 
       <form method="get" class="d-flex align-items-center gap-2 m-0">
@@ -47,7 +74,7 @@
     </div>
 
     <div class="text-muted small">
-      Questions: <strong class="text-light">{{ questions.count }}</strong>
+      Questions in Bank: <strong class="text-light">{{ questions.count }}</strong>
     </div>
   </div>
 
@@ -55,6 +82,11 @@
     <table class="kd-table" id="questions-table">
       <thead>
         <tr>
+          <th style="width: 44px; text-align: center;">
+            <input type="checkbox" id="selectAllHeaderChk" class="form-check-input" 
+                   style="width: 17px; height: 17px; accent-color: var(--kd-primary); cursor: pointer;"
+                   title="Select All Questions on this page" onchange="toggleMasterCheckbox(this)">
+          </th>
           <th>Course</th>
           <th>Question Prompt</th>
           <th>Topic</th>
@@ -66,7 +98,12 @@
       </thead>
       <tbody>
         {% for q in questions %}
-        <tr>
+        <tr id="row-q-{{ q.id }}">
+          <td style="text-align: center; vertical-align: middle;">
+            <input type="checkbox" name="question_ids" value="{{ q.id }}" class="form-check-input question-select-chk" 
+                   style="width: 17px; height: 17px; accent-color: var(--kd-primary); cursor: pointer;"
+                   onchange="onQuestionCheckChange()">
+          </td>
           <td><span class="kd-course-code">{{ q.course.code }}</span></td>
           <td style="max-width: 440px;">
             <div class="fw-medium text-light text-truncate" title="{{ q.question_text }}">{{ q.question_text }}</div>
@@ -145,17 +182,17 @@
         </div>
         {% empty %}
         <tr>
-          <td colspan="7" class="text-center py-5">
+          <td colspan="8" class="text-center py-5">
             <div class="kd-empty-state">
               <div class="kd-empty-icon"><i class="bi bi-database"></i></div>
               <h3 class="kd-empty-title">Question Bank is Empty</h3>
-              <p class="kd-empty-desc">Add questions manually or upload an Excel spreadsheet to bulk-populate.</p>
+              <p class="kd-empty-desc">Add questions manually or upload an Excel/CSV spreadsheet to bulk-populate.</p>
               <div class="d-flex gap-2 justify-content-center">
-                <a href="{% url 'admin_portal:questions_import' %}" class="kd-btn kd-btn-secondary kd-btn-sm">
-                  Excel Batch Import
-                </a>
+                <button type="button" class="kd-btn kd-btn-secondary kd-btn-sm" data-bs-toggle="modal" data-bs-target="#importQuestionsModal">
+                  <i class="bi bi-file-earmark-excel"></i> Import Spreadsheet
+                </button>
                 <button type="button" class="kd-btn kd-btn-primary kd-btn-sm" data-bs-toggle="modal" data-bs-target="#createQuestionModal">
-                  Add Single Question
+                  <i class="bi bi-plus-circle"></i> Add Single Question
                 </button>
               </div>
             </div>
@@ -164,6 +201,111 @@
         {% endfor %}
       </tbody>
     </table>
+  </div>
+</div>
+
+<!-- Bulk Delete Form & Modal -->
+<div class="modal fade" id="bulkDeleteConfirmModal" tabindex="-1" aria-labelledby="bulkDeleteModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content kd-surface border border-danger">
+      <div class="modal-header border-bottom" style="border-color: var(--kd-border) !important;">
+        <h5 class="modal-title text-danger fw-bold fs-6" id="bulkDeleteModalLabel">
+          <i class="bi bi-exclamation-triangle-fill me-2"></i> Confirm Bulk Delete
+        </h5>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" action="{% url 'admin_portal:questions_bulk_delete' %}" id="bulkDeleteForm">
+        {% csrf_token %}
+        <input type="hidden" name="question_ids_str" id="bulkDeleteIdsInput" value="">
+        <div class="modal-body p-4">
+          <p class="text-light mb-2">
+            Are you sure you want to permanently delete <strong class="text-danger" id="bulkDeleteModalCount">0</strong> selected question(s) from the Question Bank?
+          </p>
+          <p class="text-muted small mb-0">
+            This will remove them from the central repository. Questions that are already locked in past submitted quiz attempts will remain safely snapshotted.
+          </p>
+        </div>
+        <div class="modal-footer border-top" style="border-color: var(--kd-border) !important;">
+          <button type="button" class="kd-btn kd-btn-outline kd-btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="kd-btn kd-btn-danger kd-btn-sm">
+            <i class="bi bi-trash-fill"></i> Yes, Delete Questions
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- Direct Excel / CSV Question Import Modal -->
+<div class="modal fade" id="importQuestionsModal" tabindex="-1" aria-labelledby="importQuestionsModalLabel" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-lg">
+    <div class="modal-content kd-surface border" style="border-color: var(--kd-border-strong);">
+      <div class="modal-header border-bottom" style="border-color: var(--kd-border) !important;">
+        <div class="d-flex align-items-center gap-2">
+          <i class="bi bi-file-earmark-excel text-primary fs-5"></i>
+          <h5 class="modal-title text-light fw-bold fs-6 mb-0" id="importQuestionsModalLabel">Import Questions Spreadsheet</h5>
+        </div>
+        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form method="post" enctype="multipart/form-data" action="{% url 'admin_portal:questions_import' %}">
+        {% csrf_token %}
+        <div class="modal-body p-4">
+          <div class="kd-form-group mb-4">
+            <label for="import_modal_course" class="kd-label kd-label-required">Target Destination Course</label>
+            <select id="import_modal_course" name="course_id" class="kd-select" required>
+              <option value="">-- Choose target course --</option>
+              {% for c in courses %}
+                <option value="{{ c.id }}">{{ c.name }} ({{ c.code }})</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="kd-form-group mb-4">
+            <div class="d-flex align-items-center justify-content-between mb-1">
+              <label class="kd-label kd-label-required mb-0">Spreadsheet File (.xlsx or .csv)</label>
+              <a href="{% url 'admin_portal:questions_template_csv' %}" class="text-primary text-decoration-none small">
+                <i class="bi bi-download me-1"></i> Download Template CSV
+              </a>
+            </div>
+            <div class="kd-dropzone" onclick="document.getElementById('modal_excel_file').click()">
+              <i class="bi bi-cloud-arrow-up kd-dropzone-icon d-block"></i>
+              <span class="fw-semibold text-light d-block mb-1">Click to select file, or drag and drop</span>
+              <span class="text-muted fs-xs">Supports Excel .xlsx and comma-separated .csv up to 5MB</span>
+              <input type="file" id="modal_excel_file" name="file" accept=".xlsx,.csv" class="d-none" onchange="displayModalSelectedFile(this)" required>
+            </div>
+            <div id="modal-file-name-display" class="mt-2 text-primary fw-medium small d-none"></div>
+          </div>
+
+          <!-- Format Reference Card -->
+          <div class="p-3 rounded bg-surface-2 border" style="border-color: var(--kd-border) !important;">
+            <div class="d-flex align-items-center justify-content-between mb-2">
+              <span class="fw-semibold text-light small"><i class="bi bi-info-circle me-1 text-primary"></i>Required Column Headers</span>
+            </div>
+            <div class="d-flex flex-wrap gap-1 mb-2">
+              <code class="kd-badge kd-badge-neutral font-monospace">question</code>
+              <code class="kd-badge kd-badge-neutral font-monospace">option_a</code>
+              <code class="kd-badge kd-badge-neutral font-monospace">option_b</code>
+              <code class="kd-badge kd-badge-neutral font-monospace">option_c</code>
+              <code class="kd-badge kd-badge-neutral font-monospace">option_d</code>
+              <code class="kd-badge kd-badge-neutral font-monospace">answer (A/B/C/D)</code>
+              <code class="kd-badge kd-badge-neutral font-monospace">difficulty</code>
+              <code class="kd-badge kd-badge-neutral font-monospace">marks</code>
+              <code class="kd-badge kd-badge-neutral font-monospace">topic</code>
+            </div>
+            <span class="text-muted fs-xs">All rows are validated atomically. Any invalid answer keys or duplicate items will be reported.</span>
+          </div>
+        </div>
+        <div class="modal-footer border-top" style="border-color: var(--kd-border) !important;">
+          <a href="{% url 'admin_portal:questions_import' %}" class="kd-btn kd-btn-outline kd-btn-sm me-auto">
+            <i class="bi bi-box-arrow-up-right me-1"></i> Open Advanced Ingestion Page
+          </a>
+          <button type="button" class="kd-btn kd-btn-outline kd-btn-sm" data-bs-dismiss="modal">Cancel</button>
+          <button type="submit" class="kd-btn kd-btn-primary kd-btn-sm">
+            <i class="bi bi-cloud-arrow-up"></i> Validate & Import Questions
+          </button>
+        </div>
+      </form>
+    </div>
   </div>
 </div>
 
@@ -277,4 +419,102 @@
     </div>
   </div>
 </div>
+
+<script>
+function displayModalSelectedFile(input) {
+  const display = document.getElementById('modal-file-name-display');
+  if (input.files && input.files[0]) {
+    display.innerHTML = `<i class="bi bi-check-circle me-1"></i> Selected: <strong>${input.files[0].name}</strong> (${(input.files[0].size / 1024).toFixed(1)} KB)`;
+    display.classList.remove('d-none');
+  }
+}
+
+function getSelectedQuestionCheckboxes() {
+  return Array.from(document.querySelectorAll('.question-select-chk:checked'));
+}
+
+function getVisibleQuestionCheckboxes() {
+  const rows = document.querySelectorAll('#questions-table tbody tr');
+  const visible = [];
+  rows.forEach(tr => {
+    if (tr.style.display !== 'none') {
+      const chk = tr.querySelector('.question-select-chk');
+      if (chk) visible.push(chk);
+    }
+  });
+  return visible;
+}
+
+function onQuestionCheckChange() {
+  const selected = getSelectedQuestionCheckboxes();
+  const visible = getVisibleQuestionCheckboxes();
+  const count = selected.length;
+  
+  const countSpan = document.getElementById('selectedCount');
+  const bar = document.getElementById('bulkActionsBar');
+  const masterChk = document.getElementById('selectAllHeaderChk');
+
+  if (countSpan) countSpan.textContent = count;
+
+  if (count > 0) {
+    bar.classList.remove('d-none');
+    bar.classList.add('d-flex');
+  } else {
+    bar.classList.remove('d-flex');
+    bar.classList.add('d-none');
+  }
+
+  if (masterChk && visible.length > 0) {
+    masterChk.checked = (selected.length === visible.length);
+    masterChk.indeterminate = (selected.length > 0 && selected.length < visible.length);
+  }
+}
+
+function toggleMasterCheckbox(master) {
+  const visible = getVisibleQuestionCheckboxes();
+  visible.forEach(chk => {
+    chk.checked = master.checked;
+  });
+  onQuestionCheckChange();
+}
+
+function selectAllQuestions(checked) {
+  const visible = getVisibleQuestionCheckboxes();
+  visible.forEach(chk => {
+    chk.checked = checked;
+  });
+  const masterChk = document.getElementById('selectAllHeaderChk');
+  if (masterChk) {
+    masterChk.checked = checked;
+    masterChk.indeterminate = false;
+  }
+  onQuestionCheckChange();
+}
+
+function handleSelectAllToDelete() {
+  const visible = getVisibleQuestionCheckboxes();
+  if (visible.length === 0) {
+    alert('There are no questions in the repository to delete.');
+    return;
+  }
+  selectAllQuestions(true);
+  openBulkDeleteModal();
+}
+
+function openBulkDeleteModal() {
+  const selected = getSelectedQuestionCheckboxes();
+  if (selected.length === 0) {
+    alert('Please select at least one question to delete.');
+    return;
+  }
+
+  const ids = selected.map(chk => chk.value).join(',');
+  document.getElementById('bulkDeleteIdsInput').value = ids;
+  document.getElementById('bulkDeleteModalCount').textContent = selected.length;
+
+  const modalEl = document.getElementById('bulkDeleteConfirmModal');
+  const modal = new bootstrap.Modal(modalEl);
+  modal.show();
+}
+</script>
 {% endblock %}

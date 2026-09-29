@@ -59,7 +59,10 @@
           <span class="text-muted fs-xs">Headers are case-insensitive. Row validation checks required choices, valid answer keys, and duplicate questions.</span>
         </div>
 
-        <div class="d-flex justify-content-end">
+        <div class="d-flex justify-content-between align-items-center">
+          <a href="{% url 'admin_portal:questions_template_csv' %}" class="kd-btn kd-btn-outline kd-btn-sm">
+            <i class="bi bi-download me-1"></i> Download Starter Template (.csv)
+          </a>
           <button type="submit" class="kd-btn kd-btn-primary">
             <i class="bi bi-cloud-arrow-up"></i> Validate & Import Questions
           </button>
