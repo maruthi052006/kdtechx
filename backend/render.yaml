@@ -24,6 +24,13 @@ services:
         value: "https://kdtechx.vercel.app,http://localhost:5173"
       - key: CSRF_TRUSTED_ORIGINS
         value: "https://kdtechx-backend-api.onrender.com,https://kdtechx.vercel.app"
+      - key: DJANGO_SUPERUSER_USERNAME
+        value: "admin"
+      - key: DJANGO_SUPERUSER_EMAIL
+        value: "admin@example.com"
+      - key: DJANGO_SUPERUSER_PASSWORD
+        generateValue: true
+
 
 databases:
   - name: kdtechx-postgres
