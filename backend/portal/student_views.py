@@ -9,6 +9,7 @@ from django.db import transaction
 from django.db.models import Avg, Count, Q
 from django.http import JsonResponse, HttpResponseForbidden
 
+from django.core.exceptions import ObjectDoesNotExist
 from apps.accounts.decorators import student_required
 from apps.courses.models import Course, CourseEnrollment
 from apps.curriculum.models import CourseWeek
@@ -198,7 +199,7 @@ def quiz_take_view(request, quiz_id):
     # Remaining seconds
     remaining_seconds = max(0, int((active_attempt.deadline_at - now).total_seconds()))
 
-    snapshots = active_attempt.question_snapshots.select_related('question').order_by('display_order')
+    snapshots = active_attempt.question_snapshots.select_related('question', 'answer').order_by('display_order')
     
     # Prepare candidate questions with scrambled options resolved
     candidate_questions = []
@@ -223,12 +224,22 @@ def quiz_take_view(request, quiz_id):
                 'text': orig_options.get(original_key, '')
             })
 
+        saved_answer = None
+        try:
+            if hasattr(snap, 'answer') and snap.answer:
+                saved_answer = snap.answer.selected_option
+        except ObjectDoesNotExist:
+            saved_answer = None
+
         candidate_questions.append({
             'snap_id': snap.id,
             'display_order': snap.display_order,
             'question_text': q.question_text,
             'marks': q.marks,
             'options': candidate_options,
+            'saved_answer': saved_answer,
+            'topic': q.topic_name or (q.topic.title if q.topic else ''),
+            'difficulty': q.difficulty.title() if q.difficulty else '',
         })
 
     return render(request, 'student/quiz/take.html', {

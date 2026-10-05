@@ -3,126 +3,402 @@
 
 {% block title %}Assessment: {{ quiz.title }} | KDTechX{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/quiz/quiz-workspace.css' %}">
+{% endblock %}
+
 {% block app_shell %}
-<div class="kd-exam-container">
-  <!-- Exam Sticky Header -->
-  <header class="kd-quiz-bar">
-    <div class="d-flex align-items-center gap-3">
-      <div class="kd-brand-logo" style="width: 28px; height: 28px; font-size: 0.8rem;">K</div>
-      <div>
-        <div class="kd-quiz-title">{{ quiz.title }}</div>
-        <div class="text-muted fs-xs">{{ quiz.course.name }} ({{ quiz.course.code }})</div>
+<div class="kd-assess-root">
+  <!-- Layer 3: Assessment Command Bar -->
+  <header class="kd-assess-command-bar" role="banner">
+    <!-- Left: Brand & Context -->
+    <div class="kd-assess-brand-context">
+      <div class="kd-assess-brand-mark" title="KDTechX Assessment Engine">K</div>
+      <div class="kd-assess-breadcrumbs">
+        <div class="kd-assess-breadcrumbs-trail">
+          <span>Assessment</span>
+          <i class="bi bi-chevron-right" style="font-size: 0.65rem;"></i>
+          <span>Live Workspace</span>
+        </div>
+        <div class="kd-assess-title-row">
+          <h1 class="kd-assess-quiz-title" title="{{ quiz.title }}">{{ quiz.title }}</h1>
+          <span class="kd-assess-course-badge">{{ quiz.course.code }}</span>
+        </div>
       </div>
     </div>
 
-    <!-- Center: Server-Authoritative Countdown Timer -->
-    <div class="d-flex align-items-center gap-3">
-      <div id="quiz-timer" class="kd-timer">
-        <i class="bi bi-clock"></i>
-        <span id="timer-display">--:--</span>
+    <!-- Center: Question Progress Hub (Desktop) -->
+    <div class="kd-assess-progress-hub d-none d-lg-flex" aria-label="Assessment Progress">
+      <div class="kd-assess-progress-text">
+        <span>Question <strong id="hdr-current-q">01</strong> of <strong>{{ total_questions|stringformat:"02d" }}</strong></span>
+        <span class="text-muted">•</span>
+        <span class="text-muted"><span id="hdr-answered-count">0</span>/{{ total_questions }} Answered</span>
+      </div>
+      <div class="kd-assess-progress-bar-track" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0">
+        <div id="hdr-progress-fill" class="kd-assess-progress-bar-fill" style="width: 0%;"></div>
+      </div>
+    </div>
+
+    <!-- Right: High-Precision Timer & Actions -->
+    <div class="kd-assess-header-actions">
+      <!-- Live Server-Authoritative Timer Capsule -->
+      <div id="quiz-timer-capsule" class="kd-assess-timer-capsule" title="Server-authoritative assessment countdown">
+        <div class="kd-assess-timer-meta">
+          <span class="kd-assess-timer-label">Time Remaining</span>
+          <div class="kd-assess-timer-status">
+            <span class="kd-assess-pulse-dot"></span>
+            <span>Live Session</span>
+          </div>
+        </div>
+        <div class="kd-assess-timer-digits">
+          <span id="timer-display">--:--</span>
+        </div>
       </div>
 
-      {% if quiz.require_fullscreen %}
-      <button type="button" id="btn-request-fullscreen" class="kd-btn kd-btn-outline kd-btn-sm d-none d-sm-inline-flex" title="Toggle Fullscreen">
-        <i class="bi bi-fullscreen"></i>
+      <!-- Fullscreen Toggle -->
+      <button type="button" id="btn-fullscreen-toggle" class="kd-assess-btn-icon d-none d-sm-inline-flex" title="Toggle Fullscreen Workspace" aria-label="Toggle Fullscreen">
+        <i class="bi bi-arrows-fullscreen"></i>
       </button>
-      {% endif %}
-    </div>
 
-    <!-- Right: Finish / Submit Trigger -->
-    <div>
-      <button type="button" id="quiz-finish-btn" class="kd-btn kd-btn-primary kd-btn-sm">
-        <i class="bi bi-check2-circle"></i> Finish Assessment
+      <!-- Theme Switcher -->
+      <button type="button" class="kd-assess-btn-icon" data-theme-toggle title="Toggle Visual Theme" aria-label="Toggle Theme">
+        <i class="bi bi-moon-stars"></i>
+      </button>
+
+      <!-- Top Finish / Submit Trigger -->
+      <button type="button" id="btn-submit-assessment-top" class="kd-assess-submit-btn-top">
+        <i class="bi bi-send-check"></i>
+        <span class="d-none d-md-inline">Submit Assessment</span>
       </button>
     </div>
   </header>
 
-  <!-- Exam Body -->
-  <main class="kd-exam-body">
-    <!-- Question Navigator Pills -->
-    <div class="kd-question-navigator">
-      {% for q in candidate_questions %}
-      <button type="button" class="kd-nav-pill" data-question-index="{{ forloop.counter0 }}">
-        {{ forloop.counter }}
-      </button>
-      {% endfor %}
-    </div>
+  <!-- Layer 4: Main Assessment Viewport -->
+  <main class="kd-assess-viewport">
+    <div class="kd-assess-main-container">
+      
+      <!-- Left Column: Active Question Workspace -->
+      <div class="kd-assess-content-area">
+        <form id="quiz-submission-form" method="post" action="{% url 'student_portal:quiz_submit' attempt.id %}">
+          {% csrf_token %}
 
-    <!-- Active Assessment Form -->
-    <form id="quiz-submission-form" method="post" action="{% url 'student_portal:quiz_submit' attempt.id %}">
-      {% csrf_token %}
+          {% for q in candidate_questions %}
+          <section 
+            class="kd-question-surface {% if forloop.first %}is-active{% endif %}" 
+            data-question-index="{{ forloop.counter0 }}" 
+            data-snap-id="{{ q.snap_id }}"
+            aria-labelledby="q-heading-{{ forloop.counter }}"
+          >
+            <!-- Question Topbar Metadata -->
+            <div class="kd-question-topbar">
+              <div class="kd-question-identity">
+                <div class="kd-question-id-badge">
+                  <span>Q{{ forloop.counter|stringformat:"02d" }}</span>
+                </div>
+                <div class="kd-question-badges">
+                  <span class="kd-meta-chip"><i class="bi bi-ui-radios-grid"></i> Single Choice</span>
+                  <span class="kd-meta-chip chip-marks"><i class="bi bi-award"></i> {{ q.marks }} Mark{% if q.marks > 1 %}s{% endif %}</span>
+                  {% if quiz.negative_marking %}
+                  <span class="kd-meta-chip text-danger" title="Negative marking active"><i class="bi bi-dash-circle"></i> -{{ quiz.negative_marks }} Neg</span>
+                  {% endif %}
+                  {% if q.difficulty %}
+                  <span class="kd-meta-chip"><i class="bi bi-speedometer2"></i> {{ q.difficulty }}</span>
+                  {% endif %}
+                  {% if q.topic %}
+                  <span class="kd-meta-chip"><i class="bi bi-layers"></i> {{ q.topic }}</span>
+                  {% endif %}
+                </div>
+              </div>
 
-      {% for q in candidate_questions %}
-      <div class="kd-question-card {% if not forloop.first %}d-none{% endif %}">
-        <div class="kd-question-header">
-          <span class="kd-question-index">Question {{ forloop.counter }} of {{ total_questions }}</span>
-          <span class="kd-badge kd-badge-neutral">{{ q.marks }} Marks</span>
-        </div>
+              <!-- Dynamic Review Badge -->
+              <span class="kd-meta-chip chip-review chip-review-tag" style="display: none;">
+                <i class="bi bi-bookmark-fill"></i> Marked for Review
+              </span>
+            </div>
 
-        <div class="kd-question-text">
-          {{ q.question_text }}
-        </div>
+            <!-- Question Statement -->
+            <div class="kd-question-statement-wrap">
+              <h2 id="q-heading-{{ forloop.counter }}" class="kd-question-text">
+                {{ q.question_text }}
+              </h2>
+            </div>
 
-        <div class="kd-options-list">
-          {% for opt in q.options %}
-          <label class="kd-option-label">
-            <input type="radio" name="question_{{ q.snap_id }}" value="{{ opt.key }}" class="kd-option-input">
-            <div class="kd-option-badge">{{ opt.key }}</div>
-            <div class="kd-option-text">{{ opt.text }}</div>
-          </label>
+            <!-- Answer Options Grid -->
+            <div class="kd-options-container" role="radiogroup" aria-labelledby="q-heading-{{ forloop.counter }}">
+              {% for opt in q.options %}
+              <label 
+                class="kd-assessment-option {% if q.saved_answer == opt.key %}is-selected{% endif %}"
+                tabindex="0"
+                role="radio"
+                aria-checked="{% if q.saved_answer == opt.key %}true{% else %}false{% endif %}"
+              >
+                <div class="kd-assessment-option-left">
+                  <input 
+                    type="radio" 
+                    name="question_{{ q.snap_id }}" 
+                    value="{{ opt.key }}" 
+                    data-snap-id="{{ q.snap_id }}"
+                    class="kd-native-radio"
+                    {% if q.saved_answer == opt.key %}checked{% endif %}
+                  >
+                  <div class="kd-option-badge-key">{{ opt.key }}</div>
+                  <div class="kd-option-body-text">{{ opt.text }}</div>
+                </div>
+                <div class="kd-option-custom-radio" aria-hidden="true"></div>
+              </label>
+              {% endfor %}
+            </div>
+          </section>
           {% endfor %}
-        </div>
-      </div>
-      {% endfor %}
-    </form>
+        </form>
 
-    <!-- Bottom Navigation Bar -->
-    <div class="d-flex align-items-center justify-content-between mt-4">
-      <button type="button" id="quiz-prev-btn" class="kd-btn kd-btn-outline kd-btn-sm" disabled>
-        <i class="bi bi-chevron-left"></i> Previous Question
-      </button>
-      <button type="button" id="quiz-next-btn" class="kd-btn kd-btn-primary kd-btn-sm">
-        Next Question <i class="bi bi-chevron-right"></i>
-      </button>
+        <!-- Desktop Persistent Control Action Bar -->
+        <nav class="kd-assess-action-bar" aria-label="Assessment Navigation Controls">
+          <!-- Left: Review Action -->
+          <div class="kd-action-left">
+            <button type="button" id="btn-mark-review" class="kd-btn-review-toggle" title="Flag this question for quick review before final submission">
+              <i class="bi bi-bookmark"></i> Mark for Review
+            </button>
+          </div>
+
+          <!-- Center: Autosave Status -->
+          <div class="kd-action-center">
+            <div class="kd-autosave-indicator" title="Your selections are continuously synchronized">
+              <span class="kd-autosave-dot"></span>
+              <span class="kd-autosave-label">Auto-saved</span>
+            </div>
+          </div>
+
+          <!-- Right: Stepper Navigation -->
+          <div class="kd-action-right">
+            <button type="button" class="kd-nav-btn kd-nav-btn-prev" disabled>
+              <i class="bi bi-chevron-left"></i> Previous Question
+            </button>
+            <button type="button" id="quiz-next-btn" class="kd-nav-btn kd-nav-btn-next">
+              Next Question <i class="bi bi-chevron-right"></i>
+            </button>
+          </div>
+        </nav>
+      </div>
+
+      <!-- Right Column: Assessment Rail (Desktop Only) -->
+      <aside class="kd-desktop-only-rail" aria-label="Assessment Question Palette">
+        <div class="kd-assessment-rail">
+          <!-- Rail Header -->
+          <div class="kd-rail-header">
+            <h3 class="kd-rail-title">Question Palette</h3>
+            <div class="kd-rail-sync-badge">Auto-save Active</div>
+          </div>
+
+          <!-- Mini KPI Counts -->
+          <div class="kd-rail-kpis">
+            <div class="kd-kpi-item">
+              <span id="kpi-answered-count" class="kd-kpi-num num-answered">0</span>
+              <span class="kd-kpi-label">Answered</span>
+            </div>
+            <div class="kd-kpi-item">
+              <span id="kpi-unanswered-count" class="kd-kpi-num num-unanswered">{{ total_questions }}</span>
+              <span class="kd-kpi-label">Remaining</span>
+            </div>
+            <div class="kd-kpi-item">
+              <span id="kpi-review-count" class="kd-kpi-num num-review">0</span>
+              <span class="kd-kpi-label">Review</span>
+            </div>
+          </div>
+
+          <!-- Matrix Grid of Questions -->
+          <div class="kd-question-matrix" role="navigation" aria-label="Jump to question">
+            {% for q in candidate_questions %}
+            <button 
+              type="button" 
+              class="kd-matrix-pill {% if forloop.first %}is-current{% endif %} {% if q.saved_answer %}is-answered{% endif %}"
+              data-question-index="{{ forloop.counter0 }}"
+              title="Go to Question {{ forloop.counter }}"
+              aria-label="Question {{ forloop.counter }}"
+            >
+              {{ forloop.counter|stringformat:"02d" }}
+            </button>
+            {% endfor %}
+          </div>
+
+          <!-- Legend -->
+          <div class="kd-matrix-legend">
+            <div class="kd-legend-item">
+              <span class="kd-legend-dot dot-current"></span>
+              <span>Current</span>
+            </div>
+            <div class="kd-legend-item">
+              <span class="kd-legend-dot dot-answered"></span>
+              <span>Answered</span>
+            </div>
+            <div class="kd-legend-item">
+              <span class="kd-legend-dot dot-review"></span>
+              <span>For Review</span>
+            </div>
+            <div class="kd-legend-item">
+              <span class="kd-legend-dot dot-unanswered"></span>
+              <span>Unanswered</span>
+            </div>
+          </div>
+
+          <!-- Keyboard Shortcuts Hint -->
+          <div class="kd-rail-shortcuts">
+            <span><kbd class="kd-shortcut-kbd">←</kbd> <kbd class="kd-shortcut-kbd">→</kbd> Navigate</span>
+            <span><kbd class="kd-shortcut-kbd">1</kbd>-<kbd class="kd-shortcut-kbd">4</kbd> Options</span>
+            <span><kbd class="kd-shortcut-kbd">R</kbd> Review</span>
+          </div>
+        </div>
+      </aside>
+
     </div>
   </main>
-</div>
 
-<!-- Submit Confirmation Modal -->
-<div class="modal fade" id="quizConfirmSubmitModal" tabindex="-1" aria-labelledby="quizConfirmSubmitLabel" aria-hidden="true">
-  <div class="modal-dialog modal-dialog-centered">
-    <div class="modal-content kd-surface border" style="border-color: var(--kd-border-strong);">
-      <div class="modal-header border-bottom" style="border-color: var(--kd-border) !important;">
-        <h5 class="modal-title text-light fw-bold fs-6" id="quizConfirmSubmitLabel">Submit Assessment</h5>
-        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
-      </div>
-      <div class="modal-body p-4 text-center">
-        <div class="kd-empty-icon mx-auto text-primary mb-3">
-          <i class="bi bi-send-check"></i>
-        </div>
-        <h4 class="h6 fw-bold text-light mb-2">Ready to Submit?</h4>
-        <p class="text-muted small mb-4">Once submitted, your answers will be evaluated on the server and cannot be edited.</p>
+  <!-- Mobile Sticky Bottom Action Bar -->
+  <div class="kd-mobile-sticky-bar" aria-label="Mobile Controls">
+    <button 
+      type="button" 
+      id="mobile-btn-palette" 
+      class="kd-mobile-btn kd-mobile-btn-palette" 
+      data-bs-toggle="offcanvas" 
+      data-bs-target="#mobileQuestionSheet" 
+      aria-controls="mobileQuestionSheet"
+    >
+      <i class="bi bi-grid-3x3-gap"></i> 01/{{ total_questions }}
+    </button>
+    
+    <button type="button" id="mobile-btn-review" class="kd-mobile-btn kd-mobile-btn-review">
+      <i class="bi bi-bookmark"></i> Review
+    </button>
 
-        <div class="d-flex justify-content-center gap-4 p-3 rounded bg-surface-2 border mb-3" style="border-color: var(--kd-border) !important;">
-          <div>
-            <div class="text-success fw-bold fs-4 kd-tnum" id="modal-answered-count">0</div>
-            <div class="text-muted fs-xs">Answered</div>
-          </div>
-          <div class="border-end" style="border-color: var(--kd-border) !important;"></div>
-          <div>
-            <div class="text-warning fw-bold fs-4 kd-tnum" id="modal-unanswered-count">0</div>
-            <div class="text-muted fs-xs">Unanswered</div>
-          </div>
-        </div>
-      </div>
-      <div class="modal-footer border-top" style="border-color: var(--kd-border) !important;">
-        <button type="button" class="kd-btn kd-btn-outline kd-btn-sm" data-bs-dismiss="modal">Resume Test</button>
-        <button type="button" class="kd-btn kd-btn-primary kd-btn-sm" onclick="window.KDTechXQuiz.submitQuiz(false)">
-          Confirm & Finalize
+    <button type="button" class="kd-mobile-btn kd-mobile-btn-prev" disabled>
+      <i class="bi bi-chevron-left"></i> Prev
+    </button>
+
+    <button type="button" id="mobile-btn-next" class="kd-mobile-btn kd-mobile-btn-next">
+      Next <i class="bi bi-chevron-right"></i>
+    </button>
+  </div>
+
+  <!-- Mobile Bottom Sheet Offcanvas for Question Matrix -->
+  <div class="offcanvas offcanvas-bottom kd-mobile-sheet" tabindex="-1" id="mobileQuestionSheet" aria-labelledby="mobileQuestionSheetLabel">
+    <div class="kd-mobile-sheet-handle"></div>
+    <div class="offcanvas-header">
+      <h5 class="offcanvas-title fs-6 fw-bold" id="mobileQuestionSheetLabel">
+        <i class="bi bi-grid-3x3-gap text-primary me-2"></i> Question Navigator
+      </h5>
+      <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+      <!-- Mobile Matrix Grid -->
+      <div class="kd-question-matrix" style="grid-template-columns: repeat(5, 1fr); max-height: 260px;">
+        {% for q in candidate_questions %}
+        <button 
+          type="button" 
+          class="kd-matrix-pill {% if forloop.first %}is-current{% endif %} {% if q.saved_answer %}is-answered{% endif %}"
+          data-question-index="{{ forloop.counter0 }}"
+        >
+          {{ forloop.counter|stringformat:"02d" }}
         </button>
+        {% endfor %}
+      </div>
+
+      <!-- Legend in Sheet -->
+      <div class="kd-matrix-legend mt-3">
+        <div class="kd-legend-item">
+          <span class="kd-legend-dot dot-current"></span>
+          <span>Current</span>
+        </div>
+        <div class="kd-legend-item">
+          <span class="kd-legend-dot dot-answered"></span>
+          <span>Answered</span>
+        </div>
+        <div class="kd-legend-item">
+          <span class="kd-legend-dot dot-review"></span>
+          <span>For Review</span>
+        </div>
+        <div class="kd-legend-item">
+          <span class="kd-legend-dot dot-unanswered"></span>
+          <span>Unanswered</span>
+        </div>
       </div>
     </div>
   </div>
+
+  <!-- Assessment Review & Confirmation Modal -->
+  <div class="modal fade" id="quizReviewModal" tabindex="-1" aria-labelledby="quizReviewModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content kd-review-modal-content">
+        <!-- Modal Header -->
+        <div class="kd-review-modal-header">
+          <h4 class="kd-review-modal-title" id="quizReviewModalLabel">
+            <i class="bi bi-shield-check text-primary"></i> Assessment Verification & Submission
+          </h4>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+
+        <!-- Modal Body -->
+        <div class="kd-review-modal-body">
+          <!-- KPI Stats Breakdown -->
+          <div class="kd-review-stats-grid">
+            <div class="kd-review-stat-box">
+              <div id="modal-stat-total" class="kd-review-stat-val text-light">{{ total_questions }}</div>
+              <div class="kd-review-stat-lbl">Total Items</div>
+            </div>
+            <div class="kd-review-stat-box">
+              <div id="modal-stat-answered" class="kd-review-stat-val text-success">0</div>
+              <div class="kd-review-stat-lbl">Answered</div>
+            </div>
+            <div class="kd-review-stat-box">
+              <div id="modal-stat-unanswered" class="kd-review-stat-val text-warning">{{ total_questions }}</div>
+              <div class="kd-review-stat-lbl">Unanswered</div>
+            </div>
+            <div class="kd-review-stat-box">
+              <div id="modal-stat-review" class="kd-review-stat-val text-info">0</div>
+              <div class="kd-review-stat-lbl">For Review</div>
+            </div>
+          </div>
+
+          <!-- Unanswered Warning Notice -->
+          <div id="modal-unanswered-alert" class="kd-review-warning-card" style="display: none;">
+            <i class="bi bi-exclamation-triangle-fill kd-review-warning-icon"></i>
+            <div class="kd-review-warning-text">
+              <strong>Notice:</strong> <span id="modal-alert-unanswered-count">0</span> question(s) remain unanswered. You may jump directly to any item below to complete it before finalizing.
+            </div>
+          </div>
+
+          <!-- Quick Jump Section -->
+          <div class="kd-review-jump-section">
+            <div class="kd-review-jump-header">
+              <span>Question Quick-Review Grid</span>
+              <span class="text-muted small">Tap any item to jump & edit</span>
+            </div>
+            <div id="modal-review-chips" class="kd-review-chips-grid">
+              <!-- Dynamically populated chips -->
+            </div>
+          </div>
+
+          <!-- Final Advisory -->
+          <div class="p-3 rounded bg-surface-2 border" style="border-color: var(--kd-assess-glass-border) !important;">
+            <div class="d-flex align-items-center gap-2 text-muted small">
+              <i class="bi bi-info-circle text-primary"></i>
+              <span>Upon confirmation, your attempt will be submitted securely and evaluated by the server. Answers cannot be modified once evaluated.</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Modal Footer -->
+        <div class="kd-review-modal-footer">
+          <button type="button" class="kd-btn kd-btn-outline kd-btn-sm px-3" data-bs-dismiss="modal">
+            <i class="bi bi-arrow-left"></i> Return to Assessment
+          </button>
+          <button type="button" id="btn-confirm-finalize" class="kd-btn kd-btn-primary kd-btn-sm px-4" onclick="window.KDTechXQuiz.submitQuiz(false)">
+            <i class="bi bi-check2-circle"></i> Confirm & Finalize Submission
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}
 
@@ -136,6 +412,7 @@
   "remainingSeconds": {{ remaining_seconds }},
   "totalQuestions": {{ total_questions }},
   "submitUrl": "{% url 'student_portal:quiz_submit' attempt.id %}",
+  "saveAnswerUrl": "{% url 'attempt-save-answer' attempt.id %}",
   "telemetryUrl": "{% url 'student_portal:quiz_security_event' attempt.id %}",
   "requireFullscreen": {% if quiz.require_fullscreen %}true{% else %}false{% endif %},
   "preventCopy": {% if quiz.prevent_copy %}true{% else %}false{% endif %},
@@ -148,13 +425,14 @@ document.addEventListener('DOMContentLoaded', () => {
   if (!configEl) return;
   const config = JSON.parse(configEl.textContent);
 
-  // Initialize Exam Engine
+  // Initialize Ultra-Premium Exam Engine
   window.KDTechXQuiz.init({
     quizId: config.quizId,
     attemptId: config.attemptId,
     remainingSeconds: config.remainingSeconds,
     totalQuestions: config.totalQuestions,
-    submitUrl: config.submitUrl
+    submitUrl: config.submitUrl,
+    saveAnswerUrl: config.saveAnswerUrl
   });
 
   // Initialize Anti-Cheat Telemetry

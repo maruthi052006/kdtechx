@@ -1,0 +1,183 @@
+/* ==========================================================================
+   KDTechX Interactive Answer Cards & Selection Architecture
+   ========================================================================== */
+
+.kd-options-container {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.kd-assessment-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 16px 20px;
+  background-color: var(--kd-assess-opt-bg);
+  border: 1px solid var(--kd-assess-opt-border);
+  border-radius: 12px;
+  cursor: pointer;
+  user-select: none;
+  transition:
+    transform var(--kd-assess-transition-fast),
+    background-color var(--kd-assess-transition-fast),
+    border-color var(--kd-assess-transition-fast),
+    box-shadow var(--kd-assess-transition-fast);
+  outline: none;
+}
+
+.kd-assessment-option-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex: 1;
+  min-width: 0;
+}
+
+/* Hidden native radio for accessible form state */
+.kd-native-radio {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+  width: 0;
+  height: 0;
+}
+
+/* Option Letter Badge (A, B, C, D) */
+.kd-option-badge-key {
+  width: 34px;
+  height: 34px;
+  border-radius: 8px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid var(--kd-assess-glass-border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: var(--kd-assess-text-muted);
+  flex-shrink: 0;
+  transition: all var(--kd-assess-transition-fast);
+}
+
+[data-theme="light"] .kd-option-badge-key {
+  background-color: rgba(0, 0, 0, 0.04);
+}
+
+/* Option Text */
+.kd-option-body-text {
+  font-size: 1rem;
+  font-weight: 450;
+  color: var(--kd-assess-text);
+  line-height: 1.5;
+  word-break: break-word;
+}
+
+/* Custom Geometric Radio Indicator */
+.kd-option-custom-radio {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  border: 2px solid var(--kd-assess-text-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--kd-assess-transition-fast);
+  position: relative;
+}
+
+.kd-option-custom-radio::after {
+  content: '';
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: #ffffff;
+  transform: scale(0);
+  transition: transform 160ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* --- Interactive States --- */
+
+/* Hover State */
+.kd-assessment-option:hover {
+  background-color: var(--kd-assess-opt-hover-bg);
+  border-color: var(--kd-assess-opt-border-hover);
+  transform: translateY(-1px);
+}
+
+.kd-assessment-option:hover .kd-option-badge-key {
+  border-color: var(--kd-assess-text-muted);
+  color: var(--kd-assess-text);
+}
+
+.kd-assessment-option:hover .kd-option-custom-radio {
+  border-color: var(--kd-assess-text-muted);
+}
+
+/* Focus Visible */
+.kd-assessment-option:focus-visible,
+.kd-assessment-option.keyboard-focused {
+  border-color: var(--kd-assess-primary);
+  box-shadow: 0 0 0 3px rgba(79, 140, 255, 0.35);
+}
+
+/* Selected State */
+.kd-assessment-option.is-selected {
+  background-color: var(--kd-assess-opt-selected-bg);
+  border-color: var(--kd-assess-opt-selected-border);
+  box-shadow: var(--kd-assess-opt-selected-glow);
+}
+
+.kd-assessment-option.is-selected .kd-option-badge-key {
+  background: linear-gradient(135deg, var(--kd-assess-primary) 0%, #3b74db 100%);
+  border-color: var(--kd-assess-primary);
+  color: #ffffff;
+  box-shadow: 0 2px 8px rgba(79, 140, 255, 0.4);
+}
+
+.kd-assessment-option.is-selected .kd-option-custom-radio {
+  border-color: var(--kd-assess-primary);
+  background-color: var(--kd-assess-primary);
+  box-shadow: 0 0 8px rgba(79, 140, 255, 0.5);
+}
+
+.kd-assessment-option.is-selected .kd-option-custom-radio::after {
+  transform: scale(1);
+}
+
+/* Disabled State */
+.kd-assessment-option.is-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .kd-assessment-option,
+  .kd-option-custom-radio::after {
+    transition: none !important;
+    transform: none !important;
+  }
+}
+
+@media (max-width: 600px) {
+  .kd-assessment-option {
+    padding: 13px 15px;
+    gap: 12px;
+  }
+  .kd-option-badge-key {
+    width: 28px;
+    height: 28px;
+    font-size: 0.8125rem;
+  }
+  .kd-option-body-text {
+    font-size: 0.9375rem;
+  }
+  .kd-option-custom-radio {
+    width: 18px;
+    height: 18px;
+  }
+}

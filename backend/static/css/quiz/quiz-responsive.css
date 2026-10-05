@@ -1,0 +1,155 @@
+/* ==========================================================================
+   KDTechX Assessment Responsive Architecture & Mobile Bottom Actions
+   ========================================================================== */
+
+/* Mobile Bottom Sticky Bar */
+.kd-mobile-sticky-bar {
+  display: none;
+}
+
+@media (max-width: 991px) {
+  /* Hide desktop action bar on tablet/mobile */
+  .kd-assess-action-bar {
+    display: none;
+  }
+
+  /* Sticky Bottom Bar */
+  .kd-mobile-sticky-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    z-index: 1035;
+    background-color: var(--kd-assess-glass-header);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border-top: 1px solid var(--kd-assess-glass-border);
+    padding: 10px 16px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.4);
+  }
+
+  .kd-mobile-btn {
+    min-height: 44px;
+    padding: 8px 14px;
+    border-radius: 10px;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    border: 1px solid var(--kd-assess-glass-border);
+    background-color: rgba(255, 255, 255, 0.04);
+    color: var(--kd-assess-text);
+    transition: all var(--kd-assess-transition-fast);
+    flex: 1;
+    white-space: nowrap;
+  }
+
+  [data-theme="light"] .kd-mobile-btn {
+    background-color: rgba(0, 0, 0, 0.04);
+  }
+
+  .kd-mobile-btn:active {
+    transform: scale(0.97);
+  }
+
+  .kd-mobile-btn-palette {
+    border-color: rgba(79, 140, 255, 0.3);
+    color: var(--kd-assess-primary);
+  }
+
+  .kd-mobile-btn-review.is-marked {
+    background-color: rgba(245, 158, 11, 0.15);
+    border-color: rgba(245, 158, 11, 0.5);
+    color: var(--kd-assess-amber);
+  }
+
+  .kd-mobile-btn-prev:disabled {
+    opacity: 0.3;
+    pointer-events: none;
+  }
+
+  .kd-mobile-btn-next {
+    background: linear-gradient(135deg, var(--kd-assess-primary) 0%, #2563eb 100%);
+    color: #ffffff;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    flex: 1.2;
+  }
+
+  /* Hide Desktop Rail in Main Layout */
+  .kd-desktop-only-rail {
+    display: none;
+  }
+}
+
+/* Offcanvas Bottom Sheet for Mobile Question Matrix */
+.kd-mobile-sheet {
+  background-color: var(--kd-assess-surface-elevated) !important;
+  backdrop-filter: blur(28px) !important;
+  -webkit-backdrop-filter: blur(28px) !important;
+  border-top: 1px solid var(--kd-assess-glass-border) !important;
+  border-radius: 20px 20px 0 0 !important;
+  box-shadow: 0 -10px 40px rgba(0, 0, 0, 0.5) !important;
+  color: var(--kd-assess-text) !important;
+  max-height: 82vh !important;
+}
+
+.kd-mobile-sheet-handle {
+  width: 40px;
+  height: 4px;
+  border-radius: 2px;
+  background-color: rgba(255, 255, 255, 0.2);
+  margin: 10px auto 4px;
+}
+
+[data-theme="light"] .kd-mobile-sheet-handle {
+  background-color: rgba(0, 0, 0, 0.2);
+}
+
+.kd-mobile-sheet .offcanvas-header {
+  padding: 12px 20px 8px;
+  border-bottom: 1px solid var(--kd-assess-glass-border-subtle);
+}
+
+.kd-mobile-sheet .offcanvas-body {
+  padding: 16px 20px 32px;
+}
+
+/* Small Screen Optimizations (<= 390px) */
+@media (max-width: 390px) {
+  .kd-mobile-sticky-bar {
+    padding: 8px 10px;
+    gap: 6px;
+  }
+  .kd-mobile-btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+    min-height: 40px;
+  }
+  .kd-assess-command-bar {
+    padding: 0 12px;
+  }
+}
+
+/* Landscape Mode Handling on Mobile */
+@media (max-height: 500px) and (orientation: landscape) {
+  .kd-assess-command-bar {
+    height: 48px;
+  }
+  .kd-question-surface {
+    padding: 16px 20px;
+  }
+  .kd-mobile-sticky-bar {
+    padding: 6px 16px;
+  }
+  .kd-mobile-btn {
+    min-height: 36px;
+  }
+}
