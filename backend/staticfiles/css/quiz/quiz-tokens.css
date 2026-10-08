@@ -1,0 +1,108 @@
+/* ==========================================================================
+   KDTechX Enterprise Assessment Workspace - Design Tokens & Aesthetics
+   Brand Identity: Distraction-free, High-precision, Modern, Enterprise-grade
+   ========================================================================== */
+
+:root, [data-theme="dark"] {
+  /* Assessment Shell Surfaces */
+  --kd-assess-bg: #06090e;
+  --kd-assess-bg-deep: #030508;
+  --kd-assess-surface: #0b1017;
+  --kd-assess-surface-elevated: #101620;
+  --kd-assess-surface-active: #16202e;
+  --kd-assess-surface-hover: #131b27;
+
+  /* Glassmorphism Layers */
+  --kd-assess-glass-header: rgba(11, 16, 23, 0.82);
+  --kd-assess-glass-card: rgba(16, 22, 32, 0.75);
+  --kd-assess-glass-rail: rgba(11, 16, 23, 0.70);
+  --kd-assess-glass-border: rgba(255, 255, 255, 0.08);
+  --kd-assess-glass-border-subtle: rgba(255, 255, 255, 0.04);
+  --kd-assess-glass-border-active: rgba(79, 140, 255, 0.45);
+  --kd-assess-glass-blur: 16px;
+
+  /* Option Surfaces */
+  --kd-assess-opt-bg: rgba(16, 22, 32, 0.6);
+  --kd-assess-opt-hover-bg: rgba(22, 32, 46, 0.8);
+  --kd-assess-opt-border: rgba(255, 255, 255, 0.07);
+  --kd-assess-opt-border-hover: rgba(255, 255, 255, 0.16);
+  --kd-assess-opt-selected-bg: rgba(79, 140, 255, 0.08);
+  --kd-assess-opt-selected-border: #4f8cff;
+  --kd-assess-opt-selected-glow: 0 0 20px rgba(79, 140, 255, 0.22), inset 0 0 0 1px #4f8cff;
+
+  /* Text & Foreground */
+  --kd-assess-text: #f8fafc;
+  --kd-assess-text-muted: #8b99ad;
+  --kd-assess-text-subtle: #566478;
+
+  /* Semantic State Colors */
+  --kd-assess-primary: #4f8cff;
+  --kd-assess-primary-glow: rgba(79, 140, 255, 0.35);
+  --kd-assess-cyan: #2bd8ff;
+  --kd-assess-cyan-glow: rgba(43, 216, 255, 0.28);
+  --kd-assess-emerald: #10b981;
+  --kd-assess-emerald-glow: rgba(16, 185, 129, 0.25);
+  --kd-assess-amber: #f59e0b;
+  --kd-assess-amber-glow: rgba(245, 158, 11, 0.28);
+  --kd-assess-red: #ef4444;
+  --kd-assess-red-glow: rgba(239, 68, 68, 0.32);
+  --kd-assess-purple: #8b5cf6;
+
+  /* Atmospherics */
+  --kd-assess-grid: rgba(255, 255, 255, 0.018);
+  --kd-assess-aurora: radial-gradient(circle at 50% 0%, rgba(79, 140, 255, 0.08) 0%, transparent 60%);
+
+  /* Transitions */
+  --kd-assess-transition-fast: 150ms cubic-bezier(0.16, 1, 0.3, 1);
+  --kd-assess-transition-normal: 220ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+[data-theme="light"] {
+  /* Assessment Shell Surfaces */
+  --kd-assess-bg: #f8fafc;
+  --kd-assess-bg-deep: #f1f5f9;
+  --kd-assess-surface: #ffffff;
+  --kd-assess-surface-elevated: #ffffff;
+  --kd-assess-surface-active: #e2e8f0;
+  --kd-assess-surface-hover: #f1f5f9;
+
+  /* Glassmorphism Layers */
+  --kd-assess-glass-header: rgba(255, 255, 255, 0.88);
+  --kd-assess-glass-card: rgba(255, 255, 255, 0.95);
+  --kd-assess-glass-rail: rgba(255, 255, 255, 0.90);
+  --kd-assess-glass-border: rgba(0, 0, 0, 0.08);
+  --kd-assess-glass-border-subtle: rgba(0, 0, 0, 0.04);
+  --kd-assess-glass-border-active: rgba(37, 99, 235, 0.45);
+  --kd-assess-glass-blur: 16px;
+
+  /* Option Surfaces */
+  --kd-assess-opt-bg: #ffffff;
+  --kd-assess-opt-hover-bg: #f8fafc;
+  --kd-assess-opt-border: rgba(0, 0, 0, 0.09);
+  --kd-assess-opt-border-hover: rgba(0, 0, 0, 0.18);
+  --kd-assess-opt-selected-bg: rgba(37, 99, 235, 0.05);
+  --kd-assess-opt-selected-border: #2563eb;
+  --kd-assess-opt-selected-glow: 0 0 16px rgba(37, 99, 235, 0.12), inset 0 0 0 1px #2563eb;
+
+  /* Text & Foreground */
+  --kd-assess-text: #0f172a;
+  --kd-assess-text-muted: #64748b;
+  --kd-assess-text-subtle: #94a3b8;
+
+  /* Semantic State Colors */
+  --kd-assess-primary: #2563eb;
+  --kd-assess-primary-glow: rgba(37, 99, 235, 0.25);
+  --kd-assess-cyan: #0284c7;
+  --kd-assess-cyan-glow: rgba(2, 132, 199, 0.2);
+  --kd-assess-emerald: #059669;
+  --kd-assess-emerald-glow: rgba(5, 150, 105, 0.2);
+  --kd-assess-amber: #d97706;
+  --kd-assess-amber-glow: rgba(217, 119, 6, 0.2);
+  --kd-assess-red: #dc2626;
+  --kd-assess-red-glow: rgba(220, 38, 38, 0.25);
+  --kd-assess-purple: #7c3aed;
+
+  /* Atmospherics */
+  --kd-assess-grid: rgba(0, 0, 0, 0.03);
+  --kd-assess-aurora: radial-gradient(circle at 50% 0%, rgba(37, 99, 235, 0.04) 0%, transparent 60%);
+}

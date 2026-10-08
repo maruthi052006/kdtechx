@@ -420,29 +420,43 @@
 }
 </script>
 <script>
-document.addEventListener('DOMContentLoaded', () => {
-  const configEl = document.getElementById('exam-config');
-  if (!configEl) return;
-  const config = JSON.parse(configEl.textContent);
+(function() {
+  function startExamEngine() {
+    const configEl = document.getElementById('exam-config');
+    if (!configEl || !window.KDTechXQuiz) return;
+    try {
+      const config = JSON.parse(configEl.textContent);
 
-  // Initialize Ultra-Premium Exam Engine
-  window.KDTechXQuiz.init({
-    quizId: config.quizId,
-    attemptId: config.attemptId,
-    remainingSeconds: config.remainingSeconds,
-    totalQuestions: config.totalQuestions,
-    submitUrl: config.submitUrl,
-    saveAnswerUrl: config.saveAnswerUrl
-  });
+      // Initialize Ultra-Premium Exam Engine
+      window.KDTechXQuiz.init({
+        quizId: config.quizId,
+        attemptId: config.attemptId,
+        remainingSeconds: config.remainingSeconds,
+        totalQuestions: config.totalQuestions,
+        submitUrl: config.submitUrl,
+        saveAnswerUrl: config.saveAnswerUrl
+      });
 
-  // Initialize Anti-Cheat Telemetry
-  window.KDTechXSecurity.init({
-    attemptId: config.attemptId,
-    telemetryUrl: config.telemetryUrl,
-    requireFullscreen: config.requireFullscreen,
-    preventCopy: config.preventCopy,
-    warningLimit: config.warningLimit
-  });
-});
+      // Initialize Anti-Cheat Telemetry
+      if (window.KDTechXSecurity) {
+        window.KDTechXSecurity.init({
+          attemptId: config.attemptId,
+          telemetryUrl: config.telemetryUrl,
+          requireFullscreen: config.requireFullscreen,
+          preventCopy: config.preventCopy,
+          warningLimit: config.warningLimit
+        });
+      }
+    } catch (err) {
+      console.error('KDTechX Exam initialization failed:', err);
+    }
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', startExamEngine);
+  } else {
+    startExamEngine();
+  }
+})();
 </script>
 {% endblock %}

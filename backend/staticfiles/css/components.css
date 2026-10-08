@@ -273,9 +273,11 @@
   flex-direction: column;
   gap: var(--kd-space-2);
   z-index: 1090;
+  pointer-events: none;
 }
 
 .kd-toast {
+  pointer-events: auto;
   background-color: var(--kd-surface-2);
   border: 1px solid var(--kd-border-strong);
   border-radius: var(--kd-radius-md);

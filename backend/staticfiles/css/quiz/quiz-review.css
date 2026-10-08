@@ -1,0 +1,194 @@
+/* ==========================================================================
+   KDTechX Assessment Review & Submission Modal
+   ========================================================================== */
+
+.kd-review-modal-content {
+  background-color: var(--kd-assess-surface-elevated);
+  backdrop-filter: blur(28px);
+  -webkit-backdrop-filter: blur(28px);
+  border: 1px solid var(--kd-assess-glass-border);
+  border-radius: 20px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.65), 0 0 0 1px rgba(255, 255, 255, 0.08);
+  overflow: hidden;
+  color: var(--kd-assess-text);
+}
+
+[data-theme="light"] .kd-review-modal-content {
+  box-shadow: 0 16px 48px rgba(0, 0, 0, 0.15);
+}
+
+.kd-review-modal-header {
+  padding: 20px 28px;
+  border-bottom: 1px solid var(--kd-assess-glass-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kd-review-modal-title {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.125rem;
+  font-weight: 700;
+  margin: 0;
+  color: var(--kd-assess-text);
+}
+
+.kd-review-modal-body {
+  padding: 24px 28px;
+}
+
+/* Stats Matrix */
+.kd-review-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.kd-review-stat-box {
+  background-color: rgba(255, 255, 255, 0.03);
+  border: 1px solid var(--kd-assess-glass-border-subtle);
+  border-radius: 12px;
+  padding: 14px 10px;
+  text-align: center;
+}
+
+[data-theme="light"] .kd-review-stat-box {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+.kd-review-stat-val {
+  font-size: 1.5rem;
+  font-weight: 800;
+  line-height: 1;
+  margin-bottom: 4px;
+  font-feature-settings: 'tnum' 1;
+}
+
+.kd-review-stat-lbl {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--kd-assess-text-muted);
+}
+
+/* Unanswered Alert */
+.kd-review-warning-card {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  padding: 14px 18px;
+  border-radius: 12px;
+  background-color: rgba(245, 158, 11, 0.1);
+  border: 1px solid rgba(245, 158, 11, 0.35);
+  margin-bottom: 24px;
+}
+
+.kd-review-warning-icon {
+  font-size: 1.25rem;
+  color: var(--kd-assess-amber);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+
+.kd-review-warning-text {
+  font-size: 0.875rem;
+  color: #fef3c7;
+  line-height: 1.5;
+}
+
+[data-theme="light"] .kd-review-warning-text {
+  color: #92400e;
+}
+
+/* Quick Jump Chips */
+.kd-review-jump-section {
+  margin-bottom: 24px;
+}
+
+.kd-review-jump-header {
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--kd-assess-text-subtle);
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.kd-review-chips-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-height: 140px;
+  overflow-y: auto;
+}
+
+.kd-review-chip {
+  padding: 6px 12px;
+  border-radius: 8px;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: 1px solid var(--kd-assess-glass-border);
+  background-color: rgba(255, 255, 255, 0.035);
+  color: var(--kd-assess-text-muted);
+  cursor: pointer;
+  transition: all var(--kd-assess-transition-fast);
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.kd-review-chip:hover {
+  border-color: var(--kd-assess-glass-border-active);
+  color: var(--kd-assess-text);
+  transform: translateY(-1px);
+}
+
+.kd-review-chip.is-answered {
+  background-color: rgba(16, 185, 129, 0.1);
+  border-color: rgba(16, 185, 129, 0.35);
+  color: var(--kd-assess-emerald);
+}
+
+.kd-review-chip.is-unanswered {
+  background-color: rgba(239, 68, 68, 0.08);
+  border-color: rgba(239, 68, 68, 0.25);
+  color: var(--kd-assess-red);
+}
+
+.kd-review-chip.is-review {
+  border-color: rgba(245, 158, 11, 0.45);
+  color: var(--kd-assess-amber);
+}
+
+/* Modal Footer */
+.kd-review-modal-footer {
+  padding: 16px 28px;
+  border-top: 1px solid var(--kd-assess-glass-border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  background-color: rgba(0, 0, 0, 0.15);
+}
+
+[data-theme="light"] .kd-review-modal-footer {
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+@media (max-width: 600px) {
+  .kd-review-stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .kd-review-modal-header,
+  .kd-review-modal-body,
+  .kd-review-modal-footer {
+    padding: 16px 18px;
+  }
+}

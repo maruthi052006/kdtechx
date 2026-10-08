@@ -111,6 +111,7 @@ window.KDTechXQuiz = (function() {
     const options = document.querySelectorAll('.kd-assessment-option');
     options.forEach(opt => {
       opt.addEventListener('click', function(e) {
+        if (e.target && e.target.matches('input[type="radio"]')) return;
         handleOptionSelect(this);
       });
 
@@ -120,6 +121,14 @@ window.KDTechXQuiz = (function() {
           e.preventDefault();
           handleOptionSelect(this);
         }
+      });
+    });
+
+    // Native radio change listener for full accessibility and state sync
+    document.querySelectorAll('.kd-native-radio').forEach(radio => {
+      radio.addEventListener('change', function() {
+        const parentOpt = this.closest('.kd-assessment-option');
+        if (parentOpt) handleOptionSelect(parentOpt);
       });
     });
   }

@@ -26,7 +26,7 @@ def student_required(view_func):
         if not request.user.is_authenticated:
             messages.info(request, "Please log in to access your student portal.")
             return redirect('accounts:student_login')
-        if not request.user.is_student_user and not request.user.is_superuser:
+        if not request.user.is_student_user:
             return redirect('admin_portal:dashboard')
         return view_func(request, *args, **kwargs)
     return _wrapped_view

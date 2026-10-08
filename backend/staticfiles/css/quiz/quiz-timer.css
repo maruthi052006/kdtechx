@@ -1,0 +1,136 @@
+/* ==========================================================================
+   KDTechX Assessment Timer Component
+   ========================================================================== */
+
+.kd-assess-timer-capsule {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 6px 14px;
+  border-radius: 999px;
+  background-color: var(--kd-assess-surface);
+  border: 1px solid var(--kd-assess-glass-border);
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.4), 0 2px 6px rgba(0, 0, 0, 0.2);
+  transition: all var(--kd-assess-transition-normal);
+  user-select: none;
+}
+
+[data-theme="light"] .kd-assess-timer-capsule {
+  box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.06), 0 2px 4px rgba(0, 0, 0, 0.04);
+}
+
+.kd-assess-timer-meta {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  line-height: 1;
+}
+
+.kd-assess-timer-label {
+  font-size: 0.625rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--kd-assess-text-subtle);
+}
+
+.kd-assess-timer-status {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: var(--kd-assess-text-muted);
+}
+
+.kd-assess-pulse-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background-color: var(--kd-assess-emerald);
+  box-shadow: 0 0 8px var(--kd-assess-emerald-glow);
+  animation: kd-timer-pulse 2s infinite;
+}
+
+.kd-assess-timer-digits {
+  font-family: var(--kd-font-mono, 'JetBrains Mono', monospace);
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--kd-assess-text);
+  letter-spacing: 0.05em;
+  font-feature-settings: 'tnum' 1;
+}
+
+/* Warning State (< 5 minutes) */
+.kd-assess-timer-capsule.is-warning {
+  border-color: rgba(245, 158, 11, 0.4);
+  background-color: rgba(245, 158, 11, 0.07);
+  box-shadow: 0 0 12px rgba(245, 158, 11, 0.15), inset 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.kd-assess-timer-capsule.is-warning .kd-assess-pulse-dot {
+  background-color: var(--kd-assess-amber);
+  box-shadow: 0 0 8px var(--kd-assess-amber-glow);
+}
+
+.kd-assess-timer-capsule.is-warning .kd-assess-timer-digits {
+  color: var(--kd-assess-amber);
+}
+
+/* Critical State (< 1 minute) */
+.kd-assess-timer-capsule.is-critical {
+  border-color: rgba(239, 68, 68, 0.5);
+  background-color: rgba(239, 68, 68, 0.1);
+  box-shadow: 0 0 16px rgba(239, 68, 68, 0.25), inset 0 1px 2px rgba(0, 0, 0, 0.4);
+  animation: kd-critical-shake 3s infinite ease-in-out;
+}
+
+.kd-assess-timer-capsule.is-critical .kd-assess-pulse-dot {
+  background-color: var(--kd-assess-red);
+  box-shadow: 0 0 10px var(--kd-assess-red-glow);
+  animation: kd-timer-pulse-fast 0.8s infinite;
+}
+
+.kd-assess-timer-capsule.is-critical .kd-assess-timer-digits {
+  color: var(--kd-assess-red);
+}
+
+@keyframes kd-timer-pulse {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.4;
+    transform: scale(0.85);
+  }
+}
+
+@keyframes kd-timer-pulse-fast {
+  0%, 100% {
+    opacity: 1;
+    transform: scale(1.1);
+  }
+  50% {
+    opacity: 0.3;
+    transform: scale(0.8);
+  }
+}
+
+@keyframes kd-critical-shake {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+}
+
+@media (max-width: 600px) {
+  .kd-assess-timer-capsule {
+    padding: 4px 10px;
+    gap: 7px;
+  }
+  .kd-assess-timer-meta {
+    display: none;
+  }
+  .kd-assess-timer-digits {
+    font-size: 0.95rem;
+  }
+}

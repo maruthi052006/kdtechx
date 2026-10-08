@@ -1,6 +1,7 @@
 /* ==========================================================================
    KDTechX Assessment Engine & Result Styling
    ========================================================================== */
+@import url('quiz/quiz-workspace.css');
 
 /* Quiz Header Bar */
 .kd-quiz-bar {
