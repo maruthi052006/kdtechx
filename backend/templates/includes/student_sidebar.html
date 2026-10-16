@@ -35,6 +35,20 @@
       </a>
     </div>
 
+    <!-- CODING & AI TUTOR -->
+    <div class="kd-nav-group">
+      <div class="kd-nav-header">Coding & AI Tutor</div>
+      <a href="{% url 'student_portal:compiler' %}" class="kd-nav-item {% if active_nav == 'compiler' %}active{% endif %}">
+        <i class="bi bi-terminal-split"></i>
+        <span>Online Compiler</span>
+        <span class="badge bg-primary text-white ms-auto font-monospace" style="font-size: 0.65rem;">AI</span>
+      </a>
+      <a href="{% url 'student_portal:coding_problems' %}" class="kd-nav-item {% if active_nav == 'coding_problems' %}active{% endif %}">
+        <i class="bi bi-code-square"></i>
+        <span>Coding Practice</span>
+      </a>
+    </div>
+
     <!-- ASSESSMENT -->
     <div class="kd-nav-group">
       <div class="kd-nav-header">Assessment</div>

@@ -18,6 +18,8 @@ from apps.attempts.models import QuizAttempt, AttemptQuestion, AttemptAnswer
 from apps.attempts.evaluation import evaluate_quiz_attempt
 from apps.audit.models import SecurityEvent
 from apps.announcements.models import Announcement
+from apps.compiler.models import CodingProblem, CodeSubmission
+from apps.ai_tutor.models import AITutorConversation
 
 @student_required
 def dashboard_view(request):
@@ -397,4 +399,130 @@ def profile_view(request):
         'page_title': 'Student Profile',
         'profile': profile,
         'user': request.user,
+    })
+
+
+@student_required
+def compiler_view(request):
+    """
+    Interactive Online Compiler & AI Coding Tutor Playground.
+    Allows unrestricted code execution across multiple languages with AI Tutor integration.
+    """
+    profile = request.user.student_profile
+    default_starter = (
+        "# KDTechX Online Compiler & AI Coding Tutor\n"
+        "# Select your language, write your code, and ask the AI Tutor for guidance!\n\n"
+        "def main():\n"
+        "    name = input(\"Enter your name: \") if False else \"Developer\"\n"
+        "    print(f\"Hello, {name}! Welcome to KDTechX.\")\n\n"
+        "if __name__ == '__main__':\n"
+        "    main()\n"
+    )
+
+    recent_conversations = AITutorConversation.objects.filter(
+        student=profile
+    ).order_by('-updated_at')[:10]
+
+    return render(request, 'student/compiler/workspace.html', {
+        'active_nav': 'compiler',
+        'page_title': 'Online Compiler & AI Tutor',
+        'is_problem_mode': False,
+        'problem': None,
+        'starter_code': default_starter,
+        'default_language': 'python',
+        'recent_conversations': recent_conversations,
+    })
+
+
+@student_required
+def coding_problems_list_view(request):
+    """
+    Catalog of practice coding challenges categorized by difficulty and topic.
+    """
+    profile = request.user.student_profile
+    difficulty_filter = request.GET.get('difficulty', '').lower()
+    search_query = request.GET.get('q', '').strip()
+
+    problems = CodingProblem.objects.filter(is_active=True)
+    if difficulty_filter in ('easy', 'medium', 'hard'):
+        problems = problems.filter(difficulty=difficulty_filter)
+    if search_query:
+        problems = problems.filter(
+            Q(title__icontains=search_query) |
+            Q(topic_name__icontains=search_query) |
+            Q(description__icontains=search_query)
+        )
+
+    # Annotate with student submission status
+    accepted_problem_ids = set(
+        CodeSubmission.objects.filter(
+            student=profile,
+            status=CodeSubmission.Status.ACCEPTED
+        ).values_list('problem_id', flat=True)
+    )
+
+    problems_data = []
+    for p in problems:
+        problems_data.append({
+            'problem': p,
+            'is_solved': p.id in accepted_problem_ids
+        })
+
+    return render(request, 'student/compiler/problems.html', {
+        'active_nav': 'coding_problems',
+        'page_title': 'Coding Practice & Challenges',
+        'problems_data': problems_data,
+        'difficulty_filter': difficulty_filter,
+        'search_query': search_query,
+        'total_solved': len(accepted_problem_ids),
+        'total_problems': CodingProblem.objects.filter(is_active=True).count(),
+    })
+
+
+@student_required
+def coding_problem_solve_view(request, slug):
+    """
+    Integrated Coding Problem Workspace:
+    Left: Problem Statement, Constraints, Public Test Cases.
+    Center: Code Editor with Language Selector and Starter Code.
+    Bottom: Execution Console (Output, Stderr, Test Case Results).
+    Right: Collapsible AI Coding Tutor & Doubt-Clearing Agent.
+    """
+    profile = request.user.student_profile
+    problem = get_object_or_404(CodingProblem, slug=slug, is_active=True)
+
+    # Get student's previous submissions for this problem
+    submissions = CodeSubmission.objects.filter(
+        student=profile,
+        problem=problem
+    ).order_by('-created_at')[:5]
+
+    latest_submission = submissions.first()
+    default_lang = latest_submission.language if latest_submission else 'python'
+    starter_code = ""
+
+    if latest_submission:
+        starter_code = latest_submission.code
+    elif problem.starter_codes and default_lang in problem.starter_codes:
+        starter_code = problem.starter_codes[default_lang]
+    elif problem.starter_codes and 'python' in problem.starter_codes:
+        starter_code = problem.starter_codes['python']
+    else:
+        starter_code = "# Write your solution here\n"
+
+    # Fetch recent conversations for this problem
+    recent_conversations = AITutorConversation.objects.filter(
+        student=profile,
+        problem=problem
+    ).order_by('-updated_at')[:5]
+
+    return render(request, 'student/compiler/workspace.html', {
+        'active_nav': 'coding_problems',
+        'page_title': f"{problem.title} | Coding Challenge",
+        'is_problem_mode': True,
+        'problem': problem,
+        'starter_code': starter_code,
+        'default_language': default_lang,
+        'submissions': submissions,
+        'recent_conversations': recent_conversations,
     })

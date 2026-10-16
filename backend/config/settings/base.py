@@ -6,6 +6,18 @@ import dj_database_url
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent.parent
 
+# Load local .env file if present
+_env_file = BASE_DIR / '.env'
+if _env_file.exists():
+    try:
+        from decouple import Config, RepositoryEnv
+        _env_repo = RepositoryEnv(str(_env_file))
+        for _k, _v in _env_repo.data.items():
+            if _k not in os.environ:
+                os.environ[_k] = _v
+    except Exception:
+        pass
+
 # Security
 SECRET_KEY = os.environ.get(
     'SECRET_KEY',
@@ -51,6 +63,8 @@ LOCAL_APPS = [
     'apps.analytics',
     'apps.announcements',
     'apps.audit',
+    'apps.compiler',
+    'apps.ai_tutor',
     'portal',
 ]
 
@@ -230,3 +244,24 @@ SPECTACULAR_SETTINGS = {
     'SERVE_INCLUDE_SCHEMA': False,
     'COMPONENT_SPLIT_REQUEST': True,
 }
+
+# -----------------------------------------------------------------------------
+# KDTechX AI Coding Tutor & Compiler Infrastructure Configuration
+# -----------------------------------------------------------------------------
+AI_TUTOR_ENABLED = os.environ.get('AI_TUTOR_ENABLED', 'True').lower() in ('true', '1', 'yes')
+AI_TUTOR_API_KEY = (
+    os.environ.get('AI_TUTOR_API_KEY')
+    or os.environ.get('OPENAI_API_KEY')
+    or os.environ.get('GEMINI_API_KEY')
+    or ''
+).strip()
+AI_TUTOR_MODEL = os.environ.get('AI_TUTOR_MODEL') or os.environ.get('OPENAI_MODEL') or 'gemini-3.8-flash'
+AI_TUTOR_PROVIDER = os.environ.get('AI_TUTOR_PROVIDER', 'auto')
+AI_TUTOR_TIMEOUT_SECONDS = int(os.environ.get('AI_TUTOR_TIMEOUT_SECONDS', '30'))
+AI_TUTOR_MAX_INPUT_CHARS = int(os.environ.get('AI_TUTOR_MAX_INPUT_CHARS', '12000'))
+AI_TUTOR_MAX_OUTPUT_TOKENS = int(os.environ.get('AI_TUTOR_MAX_OUTPUT_TOKENS', '2048'))
+AI_TUTOR_RATE_LIMIT_PER_MINUTE = int(os.environ.get('AI_TUTOR_RATE_LIMIT_PER_MINUTE', '20'))
+AI_TUTOR_DAILY_LIMIT = int(os.environ.get('AI_TUTOR_DAILY_LIMIT', '150'))
+
+COMPILER_EXECUTION_TIMEOUT = float(os.environ.get('COMPILER_EXECUTION_TIMEOUT', '5.0'))
+COMPILER_MAX_OUTPUT_BYTES = int(os.environ.get('COMPILER_MAX_OUTPUT_BYTES', '65536'))

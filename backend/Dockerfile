@@ -13,10 +13,17 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     curl \
     && rm -rf /var/lib/apt/lists/*
 
+<<<<<<< HEAD
 COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
+=======
+COPY backend/requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+COPY backend/ .
+>>>>>>> 59b04a856cfed1bb77a92d68fb6ea3ad075e711d
 
 RUN python manage.py collectstatic --noinput
 

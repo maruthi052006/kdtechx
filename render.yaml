@@ -30,6 +30,14 @@ services:
         value: "admin@example.com"
       - key: DJANGO_SUPERUSER_PASSWORD
         generateValue: true
+      - key: AI_TUTOR_ENABLED
+        value: "True"
+      - key: AI_TUTOR_PROVIDER
+        value: "gemini"
+      - key: AI_TUTOR_MODEL
+        value: "gemini-3.8-flash"
+      - key: AI_TUTOR_API_KEY
+        sync: false
 
 
 databases:

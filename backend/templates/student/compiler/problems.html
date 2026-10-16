@@ -1,0 +1,133 @@
+{% extends 'base_student.html' %}
+{% load static %}
+
+{% block title %}Coding Practice Challenges | KDTechX{% endblock %}
+{% block page_title %}Coding Practice & Challenges{% endblock %}
+
+{% block extra_css %}
+<style>
+.kd-problem-card {
+  background: var(--kd-surface-1);
+  border: 1px solid var(--kd-border);
+  border-radius: var(--kd-radius-md, 12px);
+  padding: 1.25rem;
+  transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+.kd-problem-card:hover {
+  transform: translateY(-2px);
+  border-color: var(--kd-primary);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+.kd-diff-badge {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  padding: 0.25rem 0.6rem;
+  border-radius: 999px;
+}
+.kd-diff-easy { background: rgba(16, 185, 129, 0.15); color: #10b981; border: 1px solid rgba(16, 185, 129, 0.3); }
+.kd-diff-medium { background: rgba(245, 158, 11, 0.15); color: #f59e0b; border: 1px solid rgba(245, 158, 11, 0.3); }
+.kd-diff-hard { background: rgba(239, 68, 68, 0.15); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); }
+.kd-solved-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.75rem;
+  color: #10b981;
+  font-weight: 600;
+}
+</style>
+{% endblock %}
+
+{% block main_content %}
+<div class="mb-4">
+  <div class="d-flex flex-column flex-md-row md-align-items-center justify-content-between gap-3">
+    <div>
+      <h1 class="h4 fw-bold text-light mb-1">Coding Practice & Algorithms</h1>
+      <p class="text-muted small mb-0">Master algorithms, data structures, and problem-solving with the assistance of your AI Coding Tutor.</p>
+    </div>
+    <div class="d-flex align-items-center gap-2">
+      <a href="{% url 'student_portal:compiler' %}" class="kd-btn kd-btn-outline">
+        <i class="bi bi-terminal"></i> Scratchpad Compiler
+      </a>
+      <div class="p-2 px-3 rounded border text-muted small" style="background: var(--kd-surface-2); border-color: var(--kd-border) !important;">
+        Solved: <strong class="text-success">{{ total_solved }}</strong> / {{ total_problems }}
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- Filters Bar -->
+<div class="kd-card p-3 mb-4">
+  <form method="get" class="row g-2 align-items-center">
+    <div class="col-12 col-md-5">
+      <div class="input-group">
+        <span class="input-group-text bg-transparent border-end-0 text-muted" style="border-color: var(--kd-border);"><i class="bi bi-search"></i></span>
+        <input type="text" name="q" value="{{ search_query }}" class="form-control bg-transparent border-start-0 text-light" placeholder="Search by title, topic, or keyword..." style="border-color: var(--kd-border);">
+      </div>
+    </div>
+    <div class="col-6 col-md-3">
+      <select name="difficulty" class="form-select bg-transparent text-light" style="border-color: var(--kd-border);">
+        <option value="" {% if not difficulty_filter %}selected{% endif %} class="bg-dark">All Difficulties</option>
+        <option value="easy" {% if difficulty_filter == 'easy' %}selected{% endif %} class="bg-dark">Easy</option>
+        <option value="medium" {% if difficulty_filter == 'medium' %}selected{% endif %} class="bg-dark">Medium</option>
+        <option value="hard" {% if difficulty_filter == 'hard' %}selected{% endif %} class="bg-dark">Hard</option>
+      </select>
+    </div>
+    <div class="col-6 col-md-4 d-flex gap-2">
+      <button type="submit" class="kd-btn kd-btn-primary flex-fill">Apply Filters</button>
+      {% if search_query or difficulty_filter %}
+        <a href="{% url 'student_portal:coding_problems' %}" class="kd-btn kd-btn-outline">Clear</a>
+      {% endif %}
+    </div>
+  </form>
+</div>
+
+<!-- Problems Grid -->
+<div class="row g-3">
+  {% for item in problems_data %}
+  <div class="col-12 col-md-6 col-lg-4">
+    <div class="kd-problem-card">
+      <div class="d-flex align-items-start justify-content-between gap-2 mb-2">
+        <span class="kd-diff-badge kd-diff-{{ item.problem.difficulty }}">
+          {{ item.problem.difficulty }}
+        </span>
+        {% if item.is_solved %}
+          <span class="kd-solved-badge" title="You have solved this challenge">
+            <i class="bi bi-check-circle-fill"></i> Solved
+          </span>
+        {% endif %}
+      </div>
+      <h3 class="h6 fw-bold text-light mb-1">{{ item.problem.title }}</h3>
+      <div class="text-muted fs-xs mb-3">
+        <i class="bi bi-tag"></i> {{ item.problem.topic_name|default:"General Programming" }}
+      </div>
+      <p class="text-muted small mb-4 flex-fill" style="display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden;">
+        {{ item.problem.description }}
+      </p>
+      <div class="d-flex align-items-center justify-content-between pt-3 border-top mt-auto" style="border-color: var(--kd-border) !important;">
+        <span class="text-muted fs-xs">
+          <i class="bi bi-lightning-charge"></i> AI Tutor Ready
+        </span>
+        <a href="{% url 'student_portal:coding_problem_solve' item.problem.slug %}" class="kd-btn kd-btn-primary kd-btn-sm">
+          Solve Problem <i class="bi bi-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+  {% empty %}
+  <div class="col-12">
+    <div class="kd-empty-state py-5 text-center">
+      <div class="kd-empty-icon mb-3 fs-1 text-muted"><i class="bi bi-code-slash"></i></div>
+      <h3 class="kd-empty-title h5 text-light">No Coding Challenges Found</h3>
+      <p class="kd-empty-desc text-muted small">Try adjusting your search keywords or difficulty filters.</p>
+      <a href="{% url 'student_portal:coding_problems' %}" class="kd-btn kd-btn-outline kd-btn-sm mt-2">View All Challenges</a>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock %}

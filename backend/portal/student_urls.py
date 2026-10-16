@@ -21,4 +21,9 @@ urlpatterns = [
     path('history/', student_views.history_view, name='history'),
     path('progress/', student_views.progress_view, name='progress'),
     path('profile/', student_views.profile_view, name='profile'),
+
+    # Coding Lab & AI Tutor
+    path('compiler/', student_views.compiler_view, name='compiler'),
+    path('coding/', student_views.coding_problems_list_view, name='coding_problems'),
+    path('coding/<slug:slug>/', student_views.coding_problem_solve_view, name='coding_problem_solve'),
 ]

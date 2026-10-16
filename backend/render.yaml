@@ -2,8 +2,13 @@ services:
   - type: web
     name: kdtechx-backend-api
     runtime: docker
+<<<<<<< HEAD
     dockerfilePath: backend/Dockerfile
     dockerContext: backend
+=======
+    dockerfilePath: Dockerfile
+    dockerContext: .
+>>>>>>> 59b04a856cfed1bb77a92d68fb6ea3ad075e711d
     plan: standard
     region: oregon
     healthCheckPath: /api/health/
@@ -30,6 +35,17 @@ services:
         value: "admin@example.com"
       - key: DJANGO_SUPERUSER_PASSWORD
         generateValue: true
+<<<<<<< HEAD
+      - key: AI_TUTOR_ENABLED
+        value: "True"
+      - key: AI_TUTOR_PROVIDER
+        value: "gemini"
+      - key: AI_TUTOR_MODEL
+        value: "gemini-3.8-flash"
+      - key: AI_TUTOR_API_KEY
+        sync: false
+=======
+>>>>>>> 59b04a856cfed1bb77a92d68fb6ea3ad075e711d
 
 
 databases:

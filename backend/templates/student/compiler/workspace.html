@@ -1,0 +1,430 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}
+{% if is_problem_mode %}{{ problem.title }} | KDTechX Coding Lab{% else %}Online Compiler & AI Tutor | KDTechX{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/compiler/compiler-workspace.css' %}">
+<link rel="stylesheet" href="{% static 'css/compiler/ai-tutor.css' %}">
+{% endblock %}
+
+{% block app_shell %}
+<div class="kd-workspace-root">
+
+  <!-- Top App Navigation Bar -->
+  <header class="kd-workspace-navbar" role="banner">
+    <div class="kd-workspace-nav-left">
+      <a href="{% if is_problem_mode %}{% url 'student_portal:coding_problems' %}{% else %}{% url 'student_portal:dashboard' %}{% endif %}" class="kd-btn-back" title="Exit Workspace">
+        <i class="bi bi-arrow-left"></i>
+      </a>
+      <div class="kd-workspace-brand">
+        <div class="kd-brand-mark">K</div>
+        <div>
+          <div class="kd-workspace-tagline">
+            {% if is_problem_mode %}Coding Challenge{% else %}Interactive Playground{% endif %}
+          </div>
+          <h1 class="kd-workspace-title">
+            {% if is_problem_mode %}{{ problem.title }}{% else %}Online Compiler & AI Tutor{% endif %}
+          </h1>
+        </div>
+      </div>
+      {% if is_problem_mode %}
+        <span class="kd-diff-badge kd-diff-{{ problem.difficulty }} ms-2">
+          {{ problem.difficulty }}
+        </span>
+      {% endif %}
+    </div>
+
+    <!-- Center / Header Actions: Language & Run -->
+    <div class="kd-workspace-nav-center">
+      <div class="kd-lang-selector-group">
+        <label for="compiler-lang-select" class="visually-hidden">Language</label>
+        <i class="bi bi-code-slash text-muted me-1"></i>
+        <select id="compiler-lang-select" class="kd-lang-select">
+          <option value="python" {% if default_language == 'python' %}selected{% endif %}>Python 3 (3.14)</option>
+          <option value="javascript" {% if default_language == 'javascript' %}selected{% endif %}>JavaScript (Node.js)</option>
+          <option value="cpp" {% if default_language == 'cpp' %}selected{% endif %}>C++ (GCC/C++17)</option>
+          <option value="c" {% if default_language == 'c' %}selected{% endif %}>C (GCC)</option>
+          <option value="java" {% if default_language == 'java' %}selected{% endif %}>Java (OpenJDK)</option>
+        </select>
+      </div>
+
+      <button type="button" id="btn-run-code" class="kd-btn-run" title="Run code with input (Ctrl + Enter)">
+        <i class="bi bi-play-fill"></i>
+        <span>Run Code</span>
+      </button>
+
+      {% if is_problem_mode %}
+      <button type="button" id="btn-submit-solution" class="kd-btn-submit" title="Evaluate against all test cases">
+        <i class="bi bi-send-check"></i>
+        <span>Submit Solution</span>
+      </button>
+      {% endif %}
+    </div>
+
+    <!-- Right Header Controls: AI Tutor Drawer Toggle, Theme, Fullscreen -->
+    <div class="kd-workspace-nav-right">
+      <button type="button" id="btn-toggle-tutor" class="kd-btn-tutor-toggle is-active" title="Toggle AI Coding Tutor Panel">
+        <span class="kd-pulse-dot"></span>
+        <i class="bi bi-robot"></i>
+        <span class="d-none d-md-inline">AI Tutor</span>
+      </button>
+
+      <button type="button" id="btn-fullscreen-toggle" class="kd-btn-icon-tool d-none d-sm-inline-flex" title="Toggle Fullscreen">
+        <i class="bi bi-arrows-fullscreen"></i>
+      </button>
+
+      <button type="button" class="kd-btn-icon-tool" data-theme-toggle title="Toggle Visual Theme">
+        <i class="bi bi-moon-stars"></i>
+      </button>
+    </div>
+  </header>
+
+  <!-- Main Multi-Panel Workspace Viewport -->
+  <main class="kd-workspace-grid {% if is_problem_mode %}has-problem-panel{% endif %}">
+
+    {% if is_problem_mode %}
+    <!-- Left Panel: Problem Statement, Constraints, Public Test Cases -->
+    <aside class="kd-problem-panel" id="kd-problem-panel">
+      <div class="kd-panel-tabs">
+        <button type="button" class="kd-tab-btn is-active" data-problem-tab="description">
+          <i class="bi bi-file-earmark-text"></i> Description
+        </button>
+        <button type="button" class="kd-tab-btn" data-problem-tab="hints">
+          <i class="bi bi-lightbulb"></i> Hints ({{ problem.hints|length }})
+        </button>
+        <button type="button" class="kd-tab-btn" data-problem-tab="submissions">
+          <i class="bi bi-clock-history"></i> Submissions
+        </button>
+      </div>
+
+      <div class="kd-problem-panel-content">
+        <!-- Tab: Description -->
+        <div class="kd-tab-content is-active" id="tab-problem-description">
+          <div class="kd-problem-body">
+            <h2 class="kd-problem-headline">{{ problem.title }}</h2>
+            <div class="kd-problem-meta mb-3">
+              <span class="kd-diff-badge kd-diff-{{ problem.difficulty }}">{{ problem.difficulty }}</span>
+              <span class="text-muted fs-xs">•</span>
+              <span class="text-muted fs-xs">{{ problem.topic_name|default:"Algorithms" }}</span>
+              <span class="text-muted fs-xs">•</span>
+              <span class="text-muted fs-xs">Time Limit: {{ problem.time_limit_seconds }}s</span>
+            </div>
+
+            <div class="kd-markdown-content mb-4">
+              {{ problem.description|linebreaks }}
+            </div>
+
+            {% if problem.constraints %}
+            <div class="kd-spec-box mb-4">
+              <div class="kd-spec-title"><i class="bi bi-shield-check"></i> Constraints</div>
+              <pre class="kd-spec-pre">{{ problem.constraints }}</pre>
+            </div>
+            {% endif %}
+
+            {% if problem.public_test_cases %}
+            <div class="kd-sample-cases">
+              <h3 class="kd-spec-title mb-2"><i class="bi bi-terminal"></i> Public Examples</h3>
+              {% for tc in problem.public_test_cases %}
+              <div class="kd-case-card mb-3">
+                <div class="kd-case-header">Example {{ forloop.counter }}</div>
+                <div class="kd-case-row">
+                  <span class="kd-case-label">Input:</span>
+                  <code>{{ tc.input }}</code>
+                </div>
+                <div class="kd-case-row">
+                  <span class="kd-case-label">Expected Output:</span>
+                  <code>{{ tc.expected_output }}</code>
+                </div>
+                {% if tc.explanation %}
+                <div class="kd-case-explanation mt-1 text-muted fs-xs">
+                  <strong>Explanation:</strong> {{ tc.explanation }}
+                </div>
+                {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+            {% endif %}
+          </div>
+        </div>
+
+        <!-- Tab: Hints -->
+        <div class="kd-tab-content" id="tab-problem-hints">
+          <div class="p-3">
+            <h3 class="h6 fw-bold text-light mb-3">Progressive Hints</h3>
+            {% for hint in problem.hints %}
+            <details class="kd-hint-details mb-2">
+              <summary class="kd-hint-summary">Hint {{ forloop.counter }}</summary>
+              <div class="kd-hint-body">{{ hint }}</div>
+            </details>
+            {% empty %}
+            <p class="text-muted small">No hints configured for this challenge.</p>
+            {% endfor %}
+          </div>
+        </div>
+
+        <!-- Tab: Submissions -->
+        <div class="kd-tab-content" id="tab-problem-submissions">
+          <div class="p-3">
+            <h3 class="h6 fw-bold text-light mb-3">Your Recent Submissions</h3>
+            {% for sub in submissions %}
+            <div class="kd-sub-item p-2 mb-2 rounded border" style="background: var(--kd-surface-2); border-color: var(--kd-border) !important;">
+              <div class="d-flex align-items-center justify-content-between mb-1">
+                <span class="badge {% if sub.status == 'accepted' %}bg-success{% else %}bg-danger{% endif %} text-uppercase" style="font-size: 0.65rem;">
+                  {{ sub.status }}
+                </span>
+                <span class="text-muted fs-xs">{{ sub.created_at|date:"M d, H:i" }}</span>
+              </div>
+              <div class="text-muted fs-xs">
+                Language: {{ sub.language }} &bull; Tests: {{ sub.passed_test_cases }}/{{ sub.total_test_cases }} &bull; {{ sub.execution_time_ms }}ms
+              </div>
+            </div>
+            {% empty %}
+            <p class="text-muted small">No submissions recorded yet.</p>
+            {% endfor %}
+          </div>
+        </div>
+      </div>
+    </aside>
+    {% endif %}
+
+    <!-- Center Panel: Editor + Console -->
+    <section class="kd-editor-panel" id="kd-editor-panel">
+      <!-- Editor Actions Ribbon (AI Quick Actions beside the code) -->
+      <div class="kd-editor-ribbon">
+        <div class="kd-editor-tab-badge">
+          <i class="bi bi-file-code"></i>
+          <span id="editor-filename">solution.py</span>
+        </div>
+
+        <div class="kd-quick-ai-actions">
+          <button type="button" class="kd-ai-action-btn" id="btn-explain-code" title="Get a line-by-line explanation of your full code">
+            <i class="bi bi-journal-text"></i> Explain Code
+          </button>
+          <button type="button" class="kd-ai-action-btn" id="btn-explain-selection" title="Highlight code in editor and click here">
+            <i class="bi bi-cursor-text"></i> Explain Selection
+          </button>
+          <button type="button" class="kd-ai-action-btn" id="btn-debug-code" title="Analyze code and suggest root-cause fixes">
+            <i class="bi bi-bug"></i> Debug Code
+          </button>
+          <button type="button" class="kd-ai-action-btn d-none d-lg-inline-flex" id="btn-analyze-complexity" title="Inspect Big-O Time & Space complexity">
+            <i class="bi bi-graph-up"></i> Complexity
+          </button>
+          <button type="button" class="kd-ai-action-btn d-none d-xl-inline-flex" id="btn-improve-code" title="Suggest idiomatic optimizations and trade-offs">
+            <i class="bi bi-magic"></i> Improve
+          </button>
+        </div>
+      </div>
+
+      <!-- Live Code Editor Surface -->
+      <div class="kd-editor-container">
+        <div class="kd-editor-line-numbers" id="kd-line-numbers" aria-hidden="true">
+          <span>1</span>
+        </div>
+        <textarea 
+          id="kd-code-editor" 
+          class="kd-code-textarea" 
+          spellcheck="false" 
+          autocapitalize="off" 
+          autocomplete="off"
+          placeholder="Write your code here..."
+          data-problem-id="{% if problem %}{{ problem.id }}{% endif %}"
+        >{{ starter_code }}</textarea>
+      </div>
+
+      <!-- Execution Console & Results Area -->
+      <div class="kd-console-container" id="kd-console-container">
+        <div class="kd-console-header">
+          <div class="kd-console-tabs">
+            <button type="button" class="kd-console-tab-btn is-active" data-console-tab="output">
+              <i class="bi bi-terminal"></i> Standard Output
+            </button>
+            <button type="button" class="kd-console-tab-btn" data-console-tab="errors">
+              <i class="bi bi-exclamation-triangle"></i> Errors & Traceback
+              <span id="console-error-dot" class="kd-dot-badge d-none"></span>
+            </button>
+            {% if is_problem_mode %}
+            <button type="button" class="kd-console-tab-btn" data-console-tab="testcases">
+              <i class="bi bi-check2-circle"></i> Test Cases
+              <span id="console-test-badge" class="kd-pill-badge d-none"></span>
+            </button>
+            {% endif %}
+            <button type="button" class="kd-console-tab-btn" data-console-tab="stdin">
+              <i class="bi bi-input-cursor"></i> Custom Input
+            </button>
+          </div>
+
+          <div class="kd-console-meta" id="kd-console-meta">
+            <span id="exec-status-badge" class="text-muted fs-xs">Idle</span>
+            <span id="exec-time-badge" class="text-muted fs-xs ms-2"></span>
+          </div>
+        </div>
+
+        <div class="kd-console-body">
+          <!-- Console Tab: Stdout -->
+          <div class="kd-console-tab-pane is-active" id="pane-console-output">
+            <pre class="kd-console-pre" id="console-stdout">Press "Run Code" to execute your program.</pre>
+          </div>
+
+          <!-- Console Tab: Stderr -->
+          <div class="kd-console-tab-pane" id="pane-console-errors">
+            <div id="error-explain-cta" class="kd-explain-cta d-none mb-2">
+              <span class="small text-danger"><i class="bi bi-exclamation-circle-fill"></i> Error detected in program output.</span>
+              <button type="button" class="kd-btn kd-btn-sm kd-btn-outline" id="btn-explain-error-action">
+                <i class="bi bi-robot"></i> Explain Error with AI Tutor
+              </button>
+            </div>
+            <pre class="kd-console-pre kd-error-text" id="console-stderr">No errors reported.</pre>
+          </div>
+
+          <!-- Console Tab: Test Cases -->
+          {% if is_problem_mode %}
+          <div class="kd-console-tab-pane" id="pane-console-testcases">
+            <div id="test-explain-cta" class="kd-explain-cta d-none mb-2">
+              <span class="small text-warning"><i class="bi bi-x-circle-fill"></i> One or more public test cases failed.</span>
+              <button type="button" class="kd-btn kd-btn-sm kd-btn-outline" id="btn-explain-test-action">
+                <i class="bi bi-robot"></i> Investigate Failure with AI Tutor
+              </button>
+            </div>
+            <div id="console-testcases-results">
+              <p class="text-muted small">Run code or submit solution to view test case pass/fail verdicts.</p>
+            </div>
+          </div>
+          {% endif %}
+
+          <!-- Console Tab: Stdin -->
+          <div class="kd-console-tab-pane" id="pane-console-stdin">
+            <textarea id="kd-custom-input" class="kd-stdin-textarea" placeholder="Enter standard input (stdin) for your program here..."></textarea>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Right Panel: AI Coding Tutor & Intelligent Doubt-Clearing Agent -->
+    <aside class="kd-tutor-panel" id="kd-ai-tutor-panel" aria-label="AI Coding Tutor">
+      <!-- Tutor Header -->
+      <div class="kd-tutor-header">
+        <div class="kd-tutor-brand">
+          <div class="kd-tutor-avatar">
+            <i class="bi bi-robot"></i>
+          </div>
+          <div>
+            <div class="kd-tutor-name">KDTechX AI Tutor</div>
+            <div class="kd-tutor-status">
+              <span class="kd-status-pulse"></span>
+              <span id="ai-status-text">Ready to help</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="kd-tutor-controls">
+          <!-- Learning Mode Dropdown -->
+          <select id="ai-learning-mode" class="kd-mode-select" title="Choose pedagogical learning style">
+            <option value="beginner">Beginner</option>
+            <option value="intermediate" selected>Intermediate</option>
+            <option value="advanced">Advanced</option>
+            <option value="hint">Hint Mode</option>
+            <option value="debugging">Debugging</option>
+          </select>
+
+          <!-- Clear History Trigger -->
+          <button type="button" id="btn-clear-chat" class="kd-btn-icon-tool" title="Clear conversation history">
+            <i class="bi bi-trash3"></i>
+          </button>
+
+          <!-- Close Drawer on Mobile -->
+          <button type="button" id="btn-close-tutor" class="kd-btn-icon-tool d-md-none" title="Close AI Tutor">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Conversation Stream -->
+      <div class="kd-tutor-stream" id="ai-chat-messages">
+        <!-- Welcome Card -->
+        <div class="kd-tutor-welcome-card">
+          <div class="kd-welcome-icon"><i class="bi bi-stars"></i></div>
+          <h4 class="h6 fw-bold text-light mb-1">Your Personal Coding Assistant</h4>
+          <p class="text-muted fs-xs mb-3">
+            Ask doubts in plain English, get line-by-line code explanations, investigate compiler errors, or discover algorithmic optimizations.
+          </p>
+          <div class="kd-quick-pill-tray">
+            <button type="button" class="kd-quick-pill" data-prompt="Explain this program in simple terms.">
+              <i class="bi bi-chat-text"></i> Explain program
+            </button>
+            <button type="button" class="kd-quick-pill" data-prompt="What is the time and space complexity of my current code?">
+              <i class="bi bi-graph-up"></i> Time complexity?
+            </button>
+            <button type="button" class="kd-quick-pill" data-prompt="Give me a gentle hint on how to improve this code without giving away the full answer.">
+              <i class="bi bi-lightbulb"></i> Give me a hint
+            </button>
+            <button type="button" class="kd-quick-pill" data-prompt="Why might this loop or logic produce an off-by-one or runtime error?">
+              <i class="bi bi-bug"></i> Check potential bugs
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading / Thinking Indicator -->
+      <div id="ai-loading-indicator" class="kd-tutor-loading d-none">
+        <div class="kd-loading-dots">
+          <span></span><span></span><span></span>
+        </div>
+        <span class="fs-xs text-muted" id="ai-loading-text">Analyzing your code...</span>
+      </div>
+
+      <!-- Error State Banner -->
+      <div id="ai-error-banner" class="kd-tutor-error-banner d-none">
+        <div class="d-flex align-items-center justify-content-between">
+          <span id="ai-error-text" class="fs-xs text-danger">An error occurred.</span>
+          <button type="button" id="btn-ai-retry" class="kd-btn kd-btn-sm kd-btn-outline p-1 px-2 fs-xs">Retry</button>
+        </div>
+      </div>
+
+      <!-- Input Bar -->
+      <div class="kd-tutor-input-tray">
+        <form id="ai-tutor-form" class="kd-tutor-form">
+          <textarea 
+            id="ai-chat-input" 
+            class="kd-tutor-input" 
+            rows="1" 
+            placeholder="Ask a doubt or follow-up question..."
+            maxlength="2000"
+          ></textarea>
+          <button type="submit" id="btn-send-doubt" class="kd-btn-send" title="Send question (Enter)">
+            <i class="bi bi-arrow-up-circle-fill"></i>
+          </button>
+        </form>
+        <div class="kd-tutor-footnote text-muted fs-xs">
+          <span>Context-aware AI • Powered by KDTechX</span>
+        </div>
+      </div>
+    </aside>
+
+  </main>
+</div>
+
+<!-- Modal: Confirm Clear History -->
+<div class="modal fade" id="clearHistoryModal" tabindex="-1" aria-hidden="true">
+  <div class="modal-dialog modal-dialog-centered modal-sm">
+    <div class="modal-content bg-dark border" style="border-color: var(--kd-border) !important;">
+      <div class="modal-body text-center p-4">
+        <div class="text-warning fs-1 mb-2"><i class="bi bi-trash3"></i></div>
+        <h5 class="h6 text-light fw-bold">Clear Conversation?</h5>
+        <p class="text-muted fs-xs mb-3">All messages in this session will be permanently cleared.</p>
+        <div class="d-flex gap-2">
+          <button type="button" class="kd-btn kd-btn-outline flex-fill" data-bs-dismiss="modal">Cancel</button>
+          <button type="button" class="kd-btn kd-btn-primary flex-fill text-danger bg-transparent border-danger" id="btn-confirm-clear">Clear</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{% static 'js/compiler-engine.js' %}"></script>
+<script src="{% static 'js/ai-tutor.js' %}"></script>
+{% endblock %}

@@ -46,6 +46,8 @@ urlpatterns = [
     path('api/analytics/', include('apps.analytics.urls')),
     path('api/announcements/', include('apps.announcements.urls')),
     path('api/audit/', include('apps.audit.urls')),
+    path('api/compiler/', include('apps.compiler.urls')),
+    path('api/ai-tutor/', include('apps.ai_tutor.urls')),
 ]
 
 handler403 = 'config.views.error_403_view'

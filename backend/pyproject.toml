@@ -1,0 +1,17 @@
+[tool.pyright]
+include = ["backend"]
+extraPaths = [
+  "backend",
+  "backend/apps",
+  "C:/Users/vasan/AppData/Local/Programs/Python/Python312/Lib/site-packages",
+  "C:/Users/vasan/AppData/Local/Packages/PythonSoftwareFoundation.Python.3.12_qbz5n2kfra8p0/LocalCache/local-packages/Python312/site-packages",
+  "C:/Users/vasan/AppData/Roaming/Python/Python314/site-packages",
+  "C:/Python314/Lib/site-packages"
+]
+pythonVersion = "3.12"
+typeCheckingMode = "basic"
+reportMissingTypeStubs = false
+reportIncompatibleVariableOverride = false
+reportAttributeAccessIssue = false
+reportUnknownMemberType = false
+reportUnknownVariableType = false
